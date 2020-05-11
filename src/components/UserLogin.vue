@@ -149,7 +149,7 @@
 
 <script>
 import Vcode from "@/components/Vcode";
-import { setToken, getToken, delToken } from "@/libs/util";
+import { setToken, delToken } from "@/libs/util";
 
 export default {
   components: {
@@ -167,7 +167,7 @@ export default {
       snackbarText: "message",
 
       // 版本信息
-      visualVersion: "v1.0.1 2020.05.10",
+      visualVersion: "v1.0.3 2020.05.11",
       serviceVersion: "获取中",
       pullVersionLoading: true,
 
@@ -213,7 +213,7 @@ export default {
     success() {
       this.vcodeShow = false; // 通过验证后，需要手动隐藏模态框
       this.loginLoading = true;
-      this.axios
+      this.http
         .post("api/login", this.loginForm)
         .then((res) => {
           console.log(res);
@@ -246,7 +246,7 @@ export default {
     onReg() {
       if (this.validate("regForm")) {
         this.onLogin();
-        this.axios
+        this.http
           .post("api/reg", this.regForm)
           .then((res) => {
             console.log(res.data.code);
@@ -279,7 +279,7 @@ export default {
       }
     },
     getVersion() {
-      this.axios
+      this.http
         .get("api/serviceVersion", this.loginForm)
         .then((res) => {
           this.serviceVersion = res.data.data.version + " " + res.data.data.tag;
@@ -342,39 +342,12 @@ export default {
   },
   mounted() {
     delToken();
-
     this.getCookie();
+
     setTimeout(() => {
       this.getVersion();
       this.cardLoading = false;
     }, 2500);
-
-    this.axios.interceptors.request.use((config) => {
-      let token = getToken();
-      if (token) {
-        config.headers["Authorization"] = "Bearer " + token;
-      } else {
-        if (window.location.pathname !== "/login") {
-          window.location.href = "/login";
-        }
-      }
-      return config;
-    });
-
-    this.axios.interceptors.response.use(
-      (res) => {
-        return res;
-      },
-      (error) => {
-        if (
-          error.response.status === 401 &&
-          window.location.pathname !== "/login"
-        ) {
-          window.location.href = "/login";
-        }
-        return error;
-      }
-    );
   },
 };
 </script>

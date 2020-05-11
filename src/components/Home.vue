@@ -80,7 +80,7 @@
 </template>
 
 <script>
-import { getToken, delToken } from "@/libs/util";
+import { getToken } from "@/libs/util";
 
 export default {
   data() {
@@ -91,7 +91,7 @@ export default {
 				{ title: "日程表", icon: "date_range", ref: "/home/iot2" },
 				{ title: "课室申请", icon: "event_note", ref: "/home/iot3" },
         { title: "课室审核", icon: "assignment_turned_in", ref: "/home/dash4" },
-				{ title: "账号审核", icon: "assignment_turned_in", ref: "/home/iot5" },
+				{ title: "账号审核", icon: "assignment_turned_in", ref: "/home/account-audit" },
 				{ title: "设置", icon: "settings_applications", ref: "/home/io6t" },
         { title: "关于", icon: "mdi-help-box", ref: "/home/io5t" },
       ],
@@ -105,38 +105,15 @@ export default {
       this.versionShow = !this.versionShow;
     },
     onLogout() {
-      delToken();
       this.$router.push({
         name: "Login",
       });
     },
   },
   beforeMount() {
-    this.axios.interceptors.request.use((config) => {
-      let token = getToken();
-      if (token) {
-        config.headers["Authorization"] = "Bearer " + token;
-      } else {
-        if (window.location.pathname !== "/login") {
-          window.location.href = "/login";
-        }
-      }
-      return config;
-    });
-
-    this.axios
-      .get("api/reg", this.loginForm)
-      .then((res) => {
-        this.serviceVersion = res.data.data.version + " " + res.data.data.tag;
-        this.cardLoading = false;
-        this.pullVersionLoading = false;
-      })
-      .catch((err) => {
-        console.log(err);
-        this.serviceVersion = "获取失败, 请检查服务!";
-        this.cardLoading = false;
-        this.pullVersionLoading = false;
-      });
+    if (!getToken()) {
+			this.onLogout()
+		}
   },
   computed: {
     bg() {
@@ -146,7 +123,6 @@ export default {
     },
   },
   mounted() {
-    // this.$router.push("/home/dash");
   },
 };
 </script>

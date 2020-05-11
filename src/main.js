@@ -1,18 +1,15 @@
 import Vue from 'vue'
 import App from './App.vue'
 import router from './router'
-import axios from 'axios'
-import VueAxios from 'vue-axios'
-// import ViewUI from 'view-design'
-// import 'view-design/dist/styles/iview.css'
+
 import vuetify from './plugins/vuetify';
 import 'material-design-icons-iconfont/dist/material-design-icons.css'
 // ali iconfont
 import './assets/iconfont.js'
 import './assets/icon.css'
 
-Vue.use(VueAxios, axios)
-// Vue.use(ViewUI)
+import http from './libs/http.js'
+Vue.prototype.http = http // axios原型
 
 Vue.config.productionTip = false
 

@@ -5,12 +5,19 @@ import Login from "@/components/UserLogin";
 import Home from "@/components/Home";
 import Dash from "@/components/Dash";
 import Iot from "@/components/Iot";
+import AccountAudit from "@/components/UserAudit";
+import Index from "@/components/Index";
 
 Vue.use(Router);
 
 export default new Router({
   mode: "history",
   routes: [
+    {
+      path: "/",
+      name: "Index",
+      component: Index,
+    },
     {
       path: "/login",
       name: "Login",
@@ -19,7 +26,7 @@ export default new Router({
     {
       path: "/home",
       name: "Home",
-      redirect:'/home/dash',
+      redirect: "/home/dash",
       component: Home,
       children: [
         {
@@ -28,8 +35,12 @@ export default new Router({
         },
         {
           path: "iot",
-          component: Iot
-        }
+          component: Iot,
+        },
+        {
+          path: "account-audit",
+          component: AccountAudit,
+        },
       ],
     },
   ],
