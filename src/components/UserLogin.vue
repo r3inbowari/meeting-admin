@@ -12,7 +12,7 @@
         <v-img src="@/assets/login-fg.png" height="600px"></v-img>
         <div class="nav-login-form">
           <div style="text-align:center;">
-            <p class="display-1">904会议系统</p>
+            <p class="display-1">904 会议系统</p>
           </div>
           <div style="margin-top:20px">
             <v-form ref="loginForm" v-model="loginFormValid">
@@ -36,7 +36,8 @@
                 required
               ></v-text-field>
 
-              <v-checkbox v-model="checkbox" label="记住密码"></v-checkbox>
+              <Vcode :show="vcodeShow" @success="success" @close="close" />
+              <v-checkbox v-model="checkPassword" label="记住密码"></v-checkbox>
 
               <v-btn
                 style="width:40%; margin-right:20%"
@@ -61,7 +62,15 @@
           </div>
           <div style="margin-top:20px">
             <h4 style="color:gray">可视化版本: {{ visualVersion }}</h4>
-            <h4 style="color:gray">服务版本: {{ serviceVersion }}</h4>
+            <h4 style="color:gray">
+              服务版本: {{ serviceVersion }}
+              <v-progress-circular
+                v-show="pullVersionLoading"
+                indeterminate
+                color="green"
+                :size="16"
+              ></v-progress-circular>
+            </h4>
           </div>
         </div>
       </v-card>
@@ -139,9 +148,18 @@
 </template>
 
 <script>
+import Vcode from "@/components/Vcode";
+import { setToken, getToken } from "@/libs/util";
+
 export default {
+  components: {
+    Vcode,
+  },
   data() {
     return {
+      // 拼图
+      vcodeShow: false,
+      // 注册框
       regDialog: false,
       // 提示框
       loginSnackbar: false,
@@ -150,11 +168,12 @@ export default {
 
       // 版本信息
       visualVersion: "v1.0.1 2020.05.10",
-      serviceVersion: "获取中...",
+      serviceVersion: "获取中",
+      pullVersionLoading: true,
 
       // 账号密码
       showLoginPassword: false,
-      checkbox: true,
+      checkPassword: false,
       loginFormValid: true,
 
       // 两个loading
@@ -177,7 +196,7 @@ export default {
       passwordRules: [(v) => !!v || "你没输入密码么?"],
       usernameRules: [
         (v) => !!v || "你还没有填写用户名呀",
-        (v) => (v && v.length <= 16 && v.length > 3) || "账号长度为3-16位",
+        (v) => (v && v.length <= 16 && v.length > 2) || "用户名长度为3-16位",
       ],
       regForm: {
         username: "",
@@ -187,12 +206,46 @@ export default {
     };
   },
   methods: {
+    submitLogin() {
+      this.vcodeShow = true;
+    },
+    // 用户通过了验证
+    success() {
+      this.vcodeShow = false; // 通过验证后，需要手动隐藏模态框
+      this.loginLoading = true;
+      this.axios
+        .post("api/login", this.loginForm)
+        .then((res) => {
+          console.log(res);
+          this.loginLoading = false;
+          this.snackbarText = "登陆成功";
+          this.snackbarColor = "blue";
+          this.loginSnackbar = true;
+          setToken(res.data.data);
+          this.checkRemenber();
+          this.$router.push({
+            name: "Home",
+          });
+        })
+        .catch((err) => {
+          console.log(err);
+          this.loginLoading = false;
+          this.snackbarText = "账号或密码错误, 请重新填写!";
+          this.snackbarColor = "red";
+          this.loginSnackbar = true;
+          this.resetForm("loginForm");
+        });
+    },
+    // 用户点击遮罩层，应该关闭模态框
+    close() {
+      this.vcodeShow = false;
+    },
     onCloseRegDialog() {
       this.regDialog = false;
-      this.resetForm("regForm");
     },
     onReg() {
       if (this.validate("regForm")) {
+        this.onLogin();
         this.axios
           .post("api/reg", this.regForm)
           .then((res) => {
@@ -202,8 +255,8 @@ export default {
               this.snackbarColor = "red";
               this.loginSnackbar = true;
             } else {
-              this.snackbarText = "注册成功, 正在等待审核";
-              this.snackbarColor = "succees";
+              this.snackbarText = "注册成功, 正在等待管理员审核";
+              this.snackbarColor = "success";
               this.loginSnackbar = true;
               this.regDialog = false;
             }
@@ -222,24 +275,7 @@ export default {
     },
     onLogin() {
       if (this.validate("loginForm")) {
-        this.loginLoading = true;
-        this.axios
-          .post("api/login", this.loginForm)
-          .then((res) => {
-            console.log(res);
-            this.loginLoading = false;
-            this.snackbarText = "登陆成功";
-            this.snackbarColor = "blue";
-            this.loginSnackbar = true;
-          })
-          .catch((err) => {
-            console.log(err);
-            this.loginLoading = false;
-            this.snackbarText = "账号或密码错误, 请重新填写!";
-            this.snackbarColor = "red";
-            this.loginSnackbar = true;
-            this.resetForm("loginForm");
-          });
+        this.submitLogin();
       }
     },
     getVersion() {
@@ -247,18 +283,96 @@ export default {
         .get("api/serviceVersion", this.loginForm)
         .then((res) => {
           this.serviceVersion = res.data.data.version + " " + res.data.data.tag;
+          this.cardLoading = false;
+          this.pullVersionLoading = false;
         })
         .catch((err) => {
           console.log(err);
           this.serviceVersion = "获取失败, 请检查服务!";
+          this.cardLoading = false;
+          this.pullVersionLoading = false;
         });
+    },
+    checkRemenber() {
+      let that = this;
+      if (that.checkPassword == true) {
+        console.log("checked == true");
+        //传入账号名，密码，和保存天数3个参数
+        that.setCookie(that.loginForm.uid, that.loginForm.password, 7);
+      } else {
+        console.log("清空Cookie");
+        //清空Cookie
+        that.clearCookie();
+      }
+    },
+    // 设置cookie
+    setCookie(c_name, c_pwd, exdays) {
+      var exdate = new Date(); //获取时间
+      exdate.setTime(exdate.getTime() + 24 * 60 * 60 * 1000 * exdays); //保存的天数
+      //字符串拼接cookie
+      window.document.cookie =
+        "uid" + "=" + c_name + ";path=/login;expires=" + exdate.toGMTString();
+      window.document.cookie =
+        "password" +
+        "=" +
+        c_pwd +
+        ";path=/login;expires=" +
+        exdate.toGMTString();
+    },
+    // 读取cookie
+    getCookie: function() {
+      if (document.cookie.length > 0) {
+        var arr = document.cookie.split("; "); //这里显示的格式需要切割一下自己可输出看下
+        for (var i = 0; i < arr.length; i++) {
+          var arr2 = arr[i].split("="); //再次切割
+          //判断查找相对应的值
+          if (arr2[0] == "uid") {
+            this.loginForm.uid = arr2[1]; //保存到保存数据的地方
+            this.checkPassword = true;
+          } else if (arr2[0] == "password") {
+            this.loginForm.password = arr2[1];
+          }
+        }
+      }
+    },
+    // 清除cookie
+    clearCookie: function() {
+      this.setCookie("", "", -1); //修改2值都为空，天数为负1天就好了
     },
   },
   mounted() {
+    this.getCookie();
     setTimeout(() => {
+      this.getVersion();
       this.cardLoading = false;
     }, 2500);
-    this.getVersion();
+
+    this.axios.interceptors.request.use((config) => {
+      let token = getToken();
+      if (token) {
+        config.headers["Authorization"] = "Bearer " + token;
+      } else {
+        if (window.location.pathname !== "/login") {
+          window.location.href = "/login";
+        }
+      }
+      return config;
+    });
+
+    this.axios.interceptors.response.use(
+      (res) => {
+        return res;
+      },
+      (error) => {
+        if (
+          error.response.status === 401 &&
+          window.location.pathname !== "/login"
+        ) {
+          window.location.href = "/login";
+        }
+        return error;
+      }
+    );
   },
 };
 </script>
