@@ -1,23 +1,35 @@
-import Vue from 'vue'
-import Router from 'vue-router'
+import Vue from "vue";
+import Router from "vue-router";
 
-import Login from '@/components/UserLogin'
-import Home from '@/components/Home'
+import Login from "@/components/UserLogin";
+import Home from "@/components/Home";
+import Dash from "@/components/Dash";
+import Iot from "@/components/Iot";
 
-Vue.use(Router)
+Vue.use(Router);
 
 export default new Router({
-  mode: 'history',
+  mode: "history",
   routes: [
     {
-      path: '/login',
-      name: 'Login',
-      component: Login
+      path: "/login",
+      name: "Login",
+      component: Login,
     },
     {
-      path: '/home',
-      name: 'Home',
+      path: "/home",
+      name: "Home",
       component: Home,
-    }
-  ]
-})
+      children: [
+        {
+          path: "dash",
+          component: Dash,
+        },
+        {
+          path: "iot",
+          component: Iot
+        }
+      ],
+    },
+  ],
+});

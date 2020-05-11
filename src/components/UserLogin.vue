@@ -149,7 +149,7 @@
 
 <script>
 import Vcode from "@/components/Vcode";
-import { setToken, getToken } from "@/libs/util";
+import { setToken, getToken, delToken } from "@/libs/util";
 
 export default {
   components: {
@@ -296,7 +296,7 @@ export default {
     checkRemenber() {
       let that = this;
       if (that.checkPassword == true) {
-        console.log("checked == true");
+        console.log("checked -> true");
         //传入账号名，密码，和保存天数3个参数
         that.setCookie(that.loginForm.uid, that.loginForm.password, 7);
       } else {
@@ -341,6 +341,8 @@ export default {
     },
   },
   mounted() {
+    delToken();
+
     this.getCookie();
     setTimeout(() => {
       this.getVersion();
