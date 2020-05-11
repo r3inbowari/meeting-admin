@@ -80,7 +80,7 @@
 </template>
 
 <script>
-import { getToken } from "@/libs/util";
+import { delToken, checkhome } from "@/libs/util";
 
 export default {
   data() {
@@ -105,15 +105,11 @@ export default {
       this.versionShow = !this.versionShow;
     },
     onLogout() {
-      this.$router.push({
-        name: "Login",
-      });
+			delToken()
     },
   },
-  beforeMount() {
-    if (!getToken()) {
-			this.onLogout()
-		}
+  beforeCreate() {
+    checkhome()
   },
   computed: {
     bg() {

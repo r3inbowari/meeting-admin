@@ -149,7 +149,7 @@
 
 <script>
 import Vcode from "@/components/Vcode";
-import { setToken, delToken } from "@/libs/util";
+import { setToken, checkid } from "@/libs/util";
 
 export default {
   components: {
@@ -321,6 +321,7 @@ export default {
     },
     // 读取cookie
     getCookie: function() {
+      console.log(document.cookie.length);
       if (document.cookie.length > 0) {
         var arr = document.cookie.split("; "); //这里显示的格式需要切割一下自己可输出看下
         for (var i = 0; i < arr.length; i++) {
@@ -340,9 +341,11 @@ export default {
       this.setCookie("", "", -1); //修改2值都为空，天数为负1天就好了
     },
   },
-  mounted() {
-    delToken();
+  beforeMount() {
     this.getCookie();
+  },
+  mounted() {
+    checkid()
 
     setTimeout(() => {
       this.getVersion();

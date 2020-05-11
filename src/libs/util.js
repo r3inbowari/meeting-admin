@@ -1,18 +1,11 @@
 import Cookies from "js-cookie";
-
+import router from '@/router'
 export const TOKEN_KEY = "token";
 
 export const setToken = (token) => {
   Cookies.set(TOKEN_KEY, token, { expires: 1 });
 };
 
-export const setCookie = (c_name, exdays) => {
-  var exdate = new Date(); //获取时间
-  exdate.setTime(exdate.getTime() + 24 * 60 * 60 * 1000 * exdays); //保存的天数
-  //字符串拼接cookie
-  window.document.cookie =
-    "token" + "=" + c_name + ";path=/;expires=" + exdate.toGMTString();
-};
 
 export const getToken = () => {
   const token = Cookies.get(TOKEN_KEY);
@@ -21,5 +14,28 @@ export const getToken = () => {
 };
 
 export const delToken = () => {
-    setCookie("clear", -1);
+  Cookies.set(TOKEN_KEY, "", { expires: -1 });
+  router.push({
+    name: "Login",
+  }).catch(err => {err});
+};
+
+export const checkid = () => {
+  if (!getToken()) {
+    if (window.location.pathname !== "/login") {
+      window.location.href = "/login"
+    }
+  } else {
+    router.push({
+      name: "Home",
+    }).catch(err => {err});
+  }
+};
+
+export const checkhome = () => {
+  if (!getToken()) {
+    if (window.location.pathname !== "/login") {
+      window.location.href = "/login"
+    }
+  }
 };
