@@ -19,6 +19,7 @@ export default new Router({
     {
       path: "/home",
       name: "Home",
+      redirect:'/home/dash',
       component: Home,
       children: [
         {

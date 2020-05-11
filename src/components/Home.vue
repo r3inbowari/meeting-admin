@@ -5,8 +5,11 @@
       :expand-on-hover="true"
       :mini-variant="true"
       :mini-variant-width="66"
+      :permanent="true"
       width="200"
+      :value="true"
       app
+      replace
       @transitionend="hello"
     >
       <v-list dense nav class="py-0">
@@ -84,8 +87,13 @@ export default {
     return {
       items: [
         { title: "主页", icon: "mdi-view-dashboard", ref: "/home/dash" },
-        { title: "物联网", icon: "mdi-image", ref: "/home/iot" },
-        { title: "关于", icon: "mdi-help-box", ref: "/home/iot" },
+				{ title: "物联网", icon: "settings_system_daydream", ref: "/home/iot" },
+				{ title: "日程表", icon: "date_range", ref: "/home/iot2" },
+				{ title: "课室申请", icon: "event_note", ref: "/home/iot3" },
+        { title: "课室审核", icon: "assignment_turned_in", ref: "/home/dash4" },
+				{ title: "账号审核", icon: "assignment_turned_in", ref: "/home/iot5" },
+				{ title: "设置", icon: "settings_applications", ref: "/home/io6t" },
+        { title: "关于", icon: "mdi-help-box", ref: "/home/io5t" },
       ],
       background: false,
       drawer: true,
@@ -138,7 +146,7 @@ export default {
     },
   },
   mounted() {
-    this.$router.push("/home/dash");
+    // this.$router.push("/home/dash");
   },
 };
 </script>
