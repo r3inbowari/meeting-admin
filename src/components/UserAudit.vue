@@ -19,7 +19,7 @@
               hide-details
             ></v-text-field>
             <v-data-table
-              loading
+              :loading="loadingData"
               style="height:100%"
               :headers="headers"
               :items="desserts"
@@ -31,10 +31,16 @@
                 <v-btn
                   style="margin-right:10px"
                   color="red"
-                  @click="editItem(item)"
+                  @click="editItem(item, 3)"
                   >拒绝</v-btn
                 >
-                <v-btn color="primary" @click="editItem(item)">同意</v-btn>
+                <v-btn
+                  style="margin-right:10px"
+                  color="primary"
+                  @click="editItem(item, 2)"
+                  >普通用户
+                </v-btn>
+                <v-btn color="success" @click="editItem(item, 1)">管理员</v-btn>
               </template>
             </v-data-table>
           </v-card>
@@ -48,6 +54,7 @@
 export default {
   data() {
     return {
+      loadingData: false,
       search: "",
       tab: null,
       items: [
@@ -63,20 +70,31 @@ export default {
           value: "username",
         },
         { text: "用户ID", value: "uid" },
+
         { text: "操作", value: "actions", sortable: false, width: "40%" },
       ],
       desserts: [],
     };
   },
   methods: {
-    editItem(item) {
+    editItem(item, select) {
+      let role = "user";
+      let status = 2;
+      if (select === 3) {
+        role = "drift";
+        status = 4;
+      } else if (select === 1) {
+        role = "manager";
+      }
+      this.loadingData = true;
       console.log(item);
       let index = this.desserts.indexOf(item);
       this.http
-        .put("api/reg/" + item.uid, {})
+        .put("api/reg/" + item.uid + "?role=" + role + "&status=" + status)
         .then((res) => {
           console.log(res);
           this.desserts.splice(index, 1);
+          this.loadingData = false;
         })
         .catch((err) => {
           console.log(err);
@@ -86,7 +104,8 @@ export default {
       this.http
         .get("api/reg")
         .then((res) => {
-          console.log(res);
+          console.log(res.data.data);
+          this.desserts = res.data.data;
         })
         .catch((err) => {
           console.log(err);
@@ -94,6 +113,8 @@ export default {
     },
   },
   mounted() {
+    console.log("aaa");
+
     this.getApplyList();
   },
 };

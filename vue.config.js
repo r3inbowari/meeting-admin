@@ -13,6 +13,14 @@ module.exports = {
           "^/api": "",
         },
       },
+      "/home/picbed/user/avatar": {
+        target: "http://192.168.5.67:9999/",
+        ws: true,
+        changeOrigin: true,
+        pathRewrite: {
+          "^/home/picbed/user/avatar": "/user/avatar",
+        },
+      }
     },
   },
 };

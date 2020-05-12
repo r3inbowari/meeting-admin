@@ -167,7 +167,7 @@ export default {
       snackbarText: "message",
 
       // 版本信息
-      visualVersion: "v1.0.3 2020.05.11",
+      visualVersion: "v1.0.5 2020.05.12 beta1",
       serviceVersion: "获取中",
       pullVersionLoading: true,
 
@@ -345,7 +345,7 @@ export default {
     this.getCookie();
   },
   mounted() {
-    checkid()
+    checkid();
 
     setTimeout(() => {
       this.getVersion();

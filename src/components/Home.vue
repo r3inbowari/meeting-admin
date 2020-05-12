@@ -15,7 +15,7 @@
       <v-list dense nav class="py-0">
         <v-list-item two-line :class="false && 'px-0'">
           <v-list-item-avatar>
-            <img src="@/assets/default-avatar.png" />
+            <img :src="avatarSrc" />
           </v-list-item-avatar>
 
           <v-list-item-content>
@@ -52,14 +52,14 @@
     <v-app-bar app dense>
       主页
       <v-spacer></v-spacer>
-      <v-chip class="ma-2" color="indigo" text-color="white">
+      <v-chip @click="onAccount" class="ma-2" color="indigo" text-color="white">
         <v-avatar left>
           <v-icon>account_box</v-icon>
         </v-avatar>
         个人中心
       </v-chip>
       <v-chip @click="onLogout" class="ma-2" color="primary" text-color="white">
-        <v-avatar left>
+        <v-avatar @click="showIconUp = true" left>
           <v-icon>exit_to_app</v-icon>
         </v-avatar>
         退出
@@ -85,14 +85,21 @@ import { delToken, checkhome } from "@/libs/util";
 export default {
   data() {
     return {
+      // 头像
+      avatarSrc: "",
+      showIconUp: false,
       items: [
         { title: "主页", icon: "mdi-view-dashboard", ref: "/home/dash" },
-				{ title: "物联网", icon: "settings_system_daydream", ref: "/home/iot" },
-				{ title: "日程表", icon: "date_range", ref: "/home/iot2" },
-				{ title: "课室申请", icon: "event_note", ref: "/home/iot3" },
+        { title: "物联网", icon: "settings_system_daydream", ref: "/home/iot" },
+        { title: "日程表", icon: "date_range", ref: "/home/iot2" },
+        { title: "课室申请", icon: "event_note", ref: "/home/iot3" },
         { title: "课室审核", icon: "assignment_turned_in", ref: "/home/dash4" },
-				{ title: "账号审核", icon: "assignment_turned_in", ref: "/home/account-audit" },
-				{ title: "设置", icon: "settings_applications", ref: "/home/io6t" },
+        {
+          title: "账号审核",
+          icon: "assignment_turned_in",
+          ref: "/home/account-audit",
+        },
+        { title: "设置", icon: "settings_applications", ref: "/home/io6t" },
         { title: "关于", icon: "mdi-help-box", ref: "/home/io5t" },
       ],
       background: false,
@@ -101,15 +108,49 @@ export default {
     };
   },
   methods: {
+    onAccount() {
+      this.$router.push({
+        path: "/home/account",
+      });
+    },
     hello() {
       this.versionShow = !this.versionShow;
     },
     onLogout() {
-			delToken()
+      delToken();
+    },
+    getAvatar() {
+      this.http
+        .get("api/user/avatar")
+        .then((res) => {
+          this.avatarSrc = "data:image/png;base64," + res.data.data;
+          console.log("home -> avatar loading ok");
+        })
+        .catch((err) => {
+          console.log(err);
+        });
     },
   },
   beforeCreate() {
-    checkhome()
+    checkhome();
+  },
+  beforeMount() {
+    this.http
+      .get("api/login")
+      .then((res) => {
+        this.$root.accountInfo = res.data.data;
+        console.log(res.data.data);
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+
+    let that = this;
+    this.$root.myEvent.$on("update:avatar", function(msg) {
+      that.avatarSrc = msg;
+      console.log("router event: center -> home");
+    });
+    this.getAvatar();
   },
   computed: {
     bg() {
@@ -118,7 +159,6 @@ export default {
         : undefined;
     },
   },
-  mounted() {
-  },
+  mounted() {},
 };
 </script>
