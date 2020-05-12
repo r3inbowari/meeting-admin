@@ -113,8 +113,6 @@ export default {
     },
   },
   mounted() {
-    console.log("aaa");
-
     this.getApplyList();
   },
 };

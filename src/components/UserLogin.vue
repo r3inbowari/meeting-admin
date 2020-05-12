@@ -167,7 +167,7 @@ export default {
       snackbarText: "message",
 
       // 版本信息
-      visualVersion: "v1.0.5 2020.05.12 beta1",
+      visualVersion: "v1.0.5 2020.05.12 beta3",
       serviceVersion: "获取中",
       pullVersionLoading: true,
 
