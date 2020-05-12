@@ -5,27 +5,31 @@
       <v-card
         :elevation="hover ? 16 : 2"
         :loading="cardLoading"
-        class="nav-login-center"
+        :class="centerCss"
         :padding="0"
         :bordered="false"
       >
-        <v-img src="@/assets/login-fg.png" height="600px"></v-img>
+        <v-img src="@/assets/login-bg3.jpeg" height="600px"></v-img>
         <div class="nav-login-form">
           <div style="text-align:center;">
-            <p class="display-1">904 会议系统</p>
+            <p class="display-1 nav-login-title">904 会议系统</p>
           </div>
           <div style="margin-top:20px">
             <v-form ref="loginForm" v-model="loginFormValid">
               <v-text-field
+                ref="uid"
                 v-model="loginForm.uid"
                 :counter="12"
                 :rules="uidRules"
                 prepend-inner-icon="mdi-account"
                 label="账号"
                 required
+                v-on:keyup.tab="inputFocus('pwd')"
+                v-on:keyup.enter="onLogin"
               ></v-text-field>
 
               <v-text-field
+                ref="pwd"
                 v-model="loginForm.password"
                 :rules="passwordRules"
                 label="密码"
@@ -34,6 +38,7 @@
                 :type="showLoginPassword ? 'text' : 'password'"
                 @click:append="showLoginPassword = !showLoginPassword"
                 required
+                v-on:keyup.enter="onLogin"
               ></v-text-field>
 
               <Vcode :show="vcodeShow" @success="success" @close="close" />
@@ -61,8 +66,10 @@
             </v-form>
           </div>
           <div style="margin-top:20px">
-            <h4 style="color:gray">可视化版本: {{ visualVersion }}</h4>
-            <h4 style="color:gray">
+            <h4 style="color:rgb(124,116,111)">
+              视图版本: {{ visualVersion }}
+            </h4>
+            <h4 style="color:rgb(124,116,111)">
               服务版本: {{ serviceVersion }}
               <v-progress-circular
                 v-show="pullVersionLoading"
@@ -77,7 +84,11 @@
     </v-hover>
 
     <div class="nav-login-footer">
-      904 会议系统 | 学习交流 QQ(34787894)
+      <br />
+      904 会议系统 | 学习交流 QQ(34787894) |
+      <a target="_blank" href="https://github.com/r3inbowari/meeting-admin"
+        >项目地址</a
+      >
       <br />
       Copyright © 2017 - 2020 r3inbowari. All Rights Reserved.
     </div>
@@ -95,7 +106,7 @@
     </v-snackbar>
 
     <!-- 注册对话框 -->
-    <v-dialog v-model="regDialog" width="400">
+    <v-dialog persistent v-model="regDialog" width="400">
       <v-card>
         <v-card-title class="headline grey lighten-2" primary-title
           >用户注册申请</v-card-title
@@ -157,6 +168,8 @@ export default {
   },
   data() {
     return {
+      // 动态样式
+      centerCss: "nav-login-center",
       // 拼图
       vcodeShow: false,
       // 注册框
@@ -167,7 +180,7 @@ export default {
       snackbarText: "message",
 
       // 版本信息
-      visualVersion: "v1.0.5 2020.05.12 beta3",
+      visualVersion: "v1.0.6 2020.05.13 beta5",
       serviceVersion: "获取中",
       pullVersionLoading: true,
 
@@ -181,7 +194,7 @@ export default {
       cardLoading: true,
       // 背景
       loginbg: {
-        backgroundImage: "url(" + require("@/assets/login-bg.png") + ")",
+        backgroundImage: "url(" + require("@/assets/login-bg1.jpeg") + ")",
         backgroundSize: "cover",
         backgroundRepeat: "no-repeat",
       },
@@ -242,6 +255,7 @@ export default {
     },
     onCloseRegDialog() {
       this.regDialog = false;
+      this.resetForm("regForm");
     },
     onReg() {
       if (this.validate("regForm")) {
@@ -274,8 +288,13 @@ export default {
       return this.$refs[target].reset();
     },
     onLogin() {
+      let that = this;
       if (this.validate("loginForm")) {
         this.submitLogin();
+      } else {
+        setTimeout(() => {
+          that.$refs.loginForm.resetValidation();
+        }, 3000);
       }
     },
     getVersion() {
@@ -340,13 +359,27 @@ export default {
     clearCookie: function() {
       this.setCookie("", "", -1); //修改2值都为空，天数为负1天就好了
     },
+    // 自动聚焦input
+    inputFocus(refName) {
+      this.$nextTick(() => {
+        //正确写法
+        this.$refs[refName].focus();
+      });
+    },
   },
   beforeMount() {
     this.getCookie();
   },
   mounted() {
     checkid();
-
+    this.inputFocus("uid");
+    window.onresize = () => {
+      if (document.body.clientWidth < 1000) {
+        this.centerCss = "nav-login-center1";
+      } else {
+        this.centerCss = "nav-login-center";
+      }
+    };
     setTimeout(() => {
       this.getVersion();
       this.cardLoading = false;
@@ -368,9 +401,29 @@ export default {
   margin-left: -500px;
   margin-top: -280px;
   width: 1000px;
+  min-width: 400px;
   height: 580px;
   overflow: hidden;
   z-index: 3;
+}
+
+.nav-login-center1 {
+  position: absolute;
+  background-color: #fff;
+  left: 50%;
+  top: 50%;
+  margin-left: -200px;
+  margin-top: -280px;
+  width: 200px;
+  min-width: 400px;
+  height: 580px;
+  overflow: hidden;
+  z-index: 3;
+}
+
+.nav-login-center1 .nav-login-form {
+  width: 66%;
+  right: 17%;
 }
 
 /* .nav-login-bg {
@@ -394,5 +447,10 @@ export default {
   left: 50%;
   bottom: 2%;
   margin-left: -200.74px;
+  color: #000000;
+}
+
+.nav-login-title {
+  color: rgb(73, 62, 62);
 }
 </style>

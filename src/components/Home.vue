@@ -49,7 +49,7 @@
       </v-list>
       <template v-slot:append>
         <div style="text-align:center;" v-show="versionShow">
-          <v-list-item-title>debugger v1.0.1-develop2</v-list-item-title>
+          <v-list-item-title>debugger v1.0.6-beta5</v-list-item-title>
         </div>
       </template>
       <!-- </v-card> -->
@@ -97,7 +97,12 @@
               label
               x-small
               ><div style="color: white">
-                v1.0.5 beta4(b223d5..df223ea) master auto-deloy
+                <v-icon style="top:-1px" small>update</v-icon>
+                v1.0.6-beta5(622a648..f52366a) ahead branch origin/master built
+                at 2020/5/13 00:13:22 auto-deloy nginx-proxy [1] /api [2] /home
+                | @webpack_debug | loginid: {{ $root.accountInfo.uid }} | role:
+                {{ $root.accountInfo.role }} {{ debug_loading }}
+                {{ debug_loading1 }}
               </div></v-chip
             >
           </div>
@@ -190,6 +195,9 @@ export default {
   data() {
     return {
       // feedback
+      debug_loading: "",
+      debug_loading1: "",
+      debug_tag: ["/", "\\", "-"],
       feedback: "",
       feedbackDialog: false,
       // 头像
@@ -262,6 +270,21 @@ export default {
     checkhome();
   },
   beforeMount() {
+    var i = 1500000;
+    const updateTime = () => {
+      if (i > 0) {
+        this.debug_loading = this.debug_tag[i % 3];
+      }
+      if (i > 1499980) {
+        this.debug_loading1 = this.debug_loading1 + "=";
+      }
+      if (i == 0) {
+        i = 1500000;
+      }
+      i--;
+    };
+    setInterval(updateTime, 500);
+
     this.bg();
     this.$root.myEvent.$on("update:title", function(msg) {
       that.homeTitle = msg;

@@ -32,6 +32,9 @@ export default new Router({
     {
       path: "/home",
       name: "Home",
+      meta: {
+        requireAuth: true,
+      },
       redirect: "/home/dash",
       component: Home,
       children: [
