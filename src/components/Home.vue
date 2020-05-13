@@ -49,7 +49,7 @@
       </v-list>
       <template v-slot:append>
         <div style="text-align:center;" v-show="versionShow">
-          <v-list-item-title>debugger v1.0.6-beta5</v-list-item-title>
+          <v-list-item-title>debugger v2.1.1</v-list-item-title>
         </div>
       </template>
       <!-- </v-card> -->
@@ -98,8 +98,8 @@
               x-small
               ><div style="color: white">
                 <v-icon style="top:-1px" small>update</v-icon>
-                v1.0.6-beta5(622a648..f52366a) ahead branch origin/master built
-                at 2020/5/13 00:13:22 auto-deloy nginx-proxy [1] /api [2] /home
+                v1.0.7-beta2(2d448a3..f3bb576) ahead branch origin/master built
+                at 2020/5/13 14:29:44 auto-deloy nginx-proxy [1] /api [2] /home
                 | @webpack_debug | loginid: {{ $root.accountInfo.uid }} | role:
                 {{ $root.accountInfo.role }} {{ debug_loading }}
                 {{ debug_loading1 }}

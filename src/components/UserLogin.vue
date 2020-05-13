@@ -180,7 +180,7 @@ export default {
       snackbarText: "message",
 
       // 版本信息
-      visualVersion: "v1.0.6 2020.05.13 beta5",
+      visualVersion: "v1.0.7 2020.05.13 beta2",
       serviceVersion: "获取中",
       pullVersionLoading: true,
 
