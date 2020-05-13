@@ -384,6 +384,7 @@ export default {
       this.getVersion();
       this.cardLoading = false;
     }, 2500);
+    this.$root.warnLog("please don't open web develop window on login page!");
   },
 };
 </script>

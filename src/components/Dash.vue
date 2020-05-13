@@ -26,6 +26,9 @@ export default {
   data() {
     return {};
   },
+  mounted() {
+    this.$root.infoLog("loaded account: " + this.$root.accountInfo.uid);
+  }
 };
 </script>
 

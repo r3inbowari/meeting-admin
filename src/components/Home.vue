@@ -109,6 +109,29 @@
         </v-col>
 
         <v-col cols="1">
+          <div style="color:white">
+            <v-chip
+              @click="cmdDialog = true"
+              color="#007ACC"
+              style="position: absolute; top:0px; right:155px"
+              pill
+              label
+              x-small
+              ><div style="color: white">
+                <v-icon style="top:0px" small>phonelink</v-icon>控制台
+              </div></v-chip
+            >
+          </div>
+        </v-col>
+
+        <v-bottom-sheet persistent v-model="cmdDialog">
+          <Cmd @onClose="onClose"></Cmd>
+        </v-bottom-sheet>
+        <v-divider
+          style="position: absolute; top:0px; right:155px"
+          vertical
+        ></v-divider>
+        <v-col cols="1">
           <v-menu min-width="200px" open-on-hover top offset-y>
             <template v-slot:activator="{ on }">
               <v-chip
@@ -180,9 +203,13 @@
 </template>
 
 <script>
-import { delToken, checkhome } from "@/libs/util";
+import { delToken, checkhome, getToken } from "@/libs/util";
+import Cmd from "@/components/com/Cmd";
 
 export default {
+  components: {
+    Cmd,
+  },
   filters: {
     parseRole(str) {
       if (str === "role") {
@@ -194,6 +221,8 @@ export default {
   },
   data() {
     return {
+      // cmd
+      cmdDialog: false,
       // feedback
       debug_loading: "",
       debug_loading1: "",
@@ -219,6 +248,10 @@ export default {
     };
   },
   methods: {
+    // cmd close
+    onClose() {
+      this.cmdDialog = false;
+    },
     // 问题反馈
     onFeedback() {
       this.http
@@ -321,6 +354,12 @@ export default {
       console.log("router event: center -> home");
     });
     this.getAvatar();
+    this.$root.infoLog("🌠 Ready on http://r3inbowari:8080");
+    this.$root.infoLog("log output tool | version: v1.0.1");
+    this.$root.warnLog("ws://websocket.r3inbowari.top:6564 has been close by remote host");
+    this.$root.infoLog("init main path: home/dash");
+    this.$root.infoLog("get jwt-auth: Bearer " + getToken());
+    
   },
   mounted() {},
 };
