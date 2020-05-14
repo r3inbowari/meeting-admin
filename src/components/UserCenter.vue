@@ -38,11 +38,9 @@
 </template>
 
 <script>
-import myUpload from "vue-image-crop-upload";
 import { getToken } from "@/libs/util";
 export default {
   components: {
-    myUpload,
   },
   data() {
     return {

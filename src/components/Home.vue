@@ -300,6 +300,21 @@ export default {
     },
   },
   beforeCreate() {
+    console.log(new Date().toISOString());
+
+    this.http
+      .post("api/apply", {
+        end: new Date().toISOString(),
+        start: new Date().toISOString(),
+        content: "你好",
+        rid: "room009",
+      })
+      .then((res) => {
+        console.log(res);
+      })
+      .catch((err) => {
+        console.log(err);
+      });
     checkhome();
   },
   beforeMount() {
@@ -356,10 +371,11 @@ export default {
     this.getAvatar();
     this.$root.infoLog("🌠 Ready on http://r3inbowari:8080");
     this.$root.infoLog("log output tool | version: v1.0.1");
-    this.$root.warnLog("ws://websocket.r3inbowari.top:6564 has been close by remote host");
+    this.$root.warnLog(
+      "ws://websocket.r3inbowari.top:6564 has been close by remote host"
+    );
     this.$root.infoLog("init main path: home/dash");
     this.$root.infoLog("get jwt-auth: Bearer " + getToken());
-    
   },
   mounted() {},
 };
