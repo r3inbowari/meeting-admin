@@ -79,8 +79,8 @@
     <!-- Sizes your content based upon application components -->
     <v-content style="background: rgb(255,249,245)">
       <!-- Provides the application the proper gutter -->
-      <v-container fluid>
-        <!-- If using vue-router -->
+      <v-container style="height:100%" fluid>
+        <!-- vue-router sec here -->
         <router-view />
       </v-container>
     </v-content>
@@ -236,8 +236,7 @@ export default {
         { title: "主页", icon: "mdi-view-dashboard", ref: "/home/dash" },
         { title: "物联网", icon: "settings_system_daydream", ref: "/home/iot" },
         { title: "日程表", icon: "date_range", ref: "/home/iot2" },
-        { title: "课室申请", icon: "event_note", ref: "/home/iot3" },
-
+        { title: "课室申请", icon: "event_note", ref: "/home/apply" },
         { title: "设置", icon: "settings_applications", ref: "/home/io6t" },
         { title: "关于", icon: "mdi-help-box", ref: "/home/io5t" },
       ],

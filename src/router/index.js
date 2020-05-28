@@ -8,6 +8,7 @@ import Iot from "@/components/Iot";
 import AccountAudit from "@/components/UserAudit";
 import Index from "@/components/Index";
 import Account from "@/components/UserCenter";
+import Apply from "@/components/Apply";
 
 Vue.use(Router);
 
@@ -41,6 +42,10 @@ export default new Router({
         {
           path: "dash",
           component: Dash,
+        },
+        {
+          path: "apply",
+          component: Apply,
         },
         {
           path: "iot",
