@@ -4,6 +4,7 @@ import { getToken } from "@/libs/util";
 // 创建axios实例
 const service = axios.create({
   // baseURL: "http://r3inbowari.top:28080",
+  // baseURL: "http://localhost:8080",
   baseURL: "http://localhost:8080",
   timeout: 15000,
 });
@@ -39,7 +40,7 @@ export default {
   service,
 
   //get请求
-  get(url, data) {
+  get (url, data) {
     return service({
       url: url,
       method: "get",
@@ -47,7 +48,7 @@ export default {
     });
   },
 
-  post(url, data) {
+  post (url, data) {
     return service({
       url: url,
       method: "post",
@@ -55,7 +56,7 @@ export default {
     });
   },
 
-  put(url, data) {
+  put (url, data) {
     return service({
       url: url,
       method: "put",
@@ -63,7 +64,7 @@ export default {
     });
   },
 
-  delete(url, data) {
+  delete (url, data) {
     return service({
       url: url,
       method: "delete",
