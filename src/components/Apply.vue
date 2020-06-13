@@ -11,6 +11,10 @@ export default {
   components: {
     Cal,
   },
-  data() {},
+  data () {
+    return {
+
+    }
+  },
 };
 </script>

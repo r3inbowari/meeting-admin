@@ -28,7 +28,8 @@ module.exports = {
     proxy: {
       "/api": {
         // target: "http://192.168.5.67:9999/",
-        target: "http://192.168.3.91:9999/",
+        // target: "http://192.168.3.91:9999/",
+        target: "http://172.20.10.2:9999/",
         ws: true,
         changeOrigin: true,
         pathRewrite: {
@@ -37,7 +38,8 @@ module.exports = {
       },
       "/home/picbed/user/avatar": {
         // target: "http://192.168.5.67:9999/",
-        target: "http://192.168.3.91:9999/",
+        // target: "http://192.168.3.91:9999/",
+        target: "http://172.20.10.2:9999/",
         ws: true,
         changeOrigin: true,
         pathRewrite: {
