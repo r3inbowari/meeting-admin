@@ -1,24 +1,28 @@
 <template>
   <div>
-    <my-upload
-      field="img"
-      @crop-success="cropSuccess"
-      @crop-upload-success="cropUploadSuccess"
-      @crop-upload-fail="cropUploadFail"
-      v-model="showUpload"
-      :width="300"
-      :height="300"
-      url="picbed/user/avatar"
-      img-format="png"
-      withCredentials
-      :headers="headers"
-    ></my-upload>
+    <my-upload field="img"
+               @crop-success="cropSuccess"
+               @crop-upload-success="cropUploadSuccess"
+               @crop-upload-fail="cropUploadFail"
+               v-model="showUpload"
+               :width="300"
+               :height="300"
+               url="picbed/user/avatar"
+               img-format="png"
+               withCredentials
+               :headers="headers"></my-upload>
 
-    <v-card class="nav-avatar" style="margin-bottom:10px" width="300" tile>
-      <v-img height="100%" :src="avatarSrc">
-        <v-row align="end" class="fill-height">
+    <v-card class="nav-avatar"
+            style="margin-bottom:10px"
+            width="300"
+            tile>
+      <v-img height="100%"
+             :src="avatarSrc">
+        <v-row align="end"
+               class="fill-height">
           <v-col class="py-0">
-            <v-list-item color="rgba(0, 0, 0, .4)" dark>
+            <v-list-item color="rgba(0, 0, 0, .4)"
+                         dark>
               <v-list-item-content>
                 <v-list-item-title class="title">{{
                   username
@@ -32,17 +36,20 @@
     </v-card>
 
     <div class="my-2">
-      <v-btn @click="showUp" color="primary">修改头像</v-btn>
+      <v-btn @click="showUp"
+             color="primary">修改头像</v-btn>
     </div>
   </div>
 </template>
 
 <script>
 import { getToken } from "@/libs/util";
+import myUpload from 'vue-image-crop-upload';
 export default {
   components: {
+    myUpload
   },
-  data() {
+  data () {
     return {
       showUpload: false,
       headers: {
@@ -57,16 +64,16 @@ export default {
     };
   },
   methods: {
-    showUp() {
+    showUp () {
       this.showUpload = true;
       this.headers.Authorization = "Bearer " + getToken();
     },
-    cropSuccess() {},
-    cropUploadSuccess() {
+    cropSuccess () { },
+    cropUploadSuccess () {
       this.getAvatar();
     },
-    cropUploadFail() {},
-    getAvatar() {
+    cropUploadFail () { },
+    getAvatar () {
       this.http
         .get("api/user/avatar")
         .then((res) => {
@@ -80,7 +87,7 @@ export default {
         });
     },
   },
-  mounted() {
+  mounted () {
     this.getAvatar();
     this.username = this.$root.accountInfo.username;
     this.uid = this.$root.accountInfo.uid;

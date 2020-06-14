@@ -1,66 +1,63 @@
 /* eslint-disable vue/no-parsing-error */
 <template>
-  <div class="nav-login" :style="loginbg">
-    <v-hover close-delay="100" v-slot:default="{ hover }">
-      <v-card
-        :elevation="hover ? 16 : 2"
-        :loading="cardLoading"
-        :class="centerCss"
-        :padding="0"
-        :bordered="false"
-      >
-        <v-img src="@/assets/login-bg3.jpeg" height="600px"></v-img>
+  <div class="nav-login"
+       :style="loginbg">
+    <v-hover close-delay="100"
+             v-slot:default="{ hover }">
+      <v-card :elevation="hover ? 16 : 2"
+              :loading="cardLoading"
+              :class="centerCss"
+              :padding="0"
+              :bordered="false">
+        <v-img src="@/assets/login-bg3.jpeg"
+               height="600px"></v-img>
         <div class="nav-login-form">
           <div style="text-align:center;">
             <p class="display-1 nav-login-title">904 会议系统</p>
           </div>
           <div style="margin-top:20px">
-            <v-form ref="loginForm" v-model="loginFormValid">
-              <v-text-field
-                ref="uid"
-                v-model="loginForm.uid"
-                :counter="12"
-                :rules="uidRules"
-                prepend-inner-icon="mdi-account"
-                label="账号"
-                required
-                v-on:keyup.tab="inputFocus('pwd')"
-                v-on:keyup.enter="onLogin"
-              ></v-text-field>
+            <v-form ref="loginForm"
+                    v-model="loginFormValid">
+              <v-text-field ref="uid"
+                            v-model="loginForm.uid"
+                            :counter="12"
+                            :rules="uidRules"
+                            prepend-inner-icon="mdi-account"
+                            label="账号"
+                            required
+                            v-on:keyup.tab="inputFocus('pwd')"
+                            v-on:keyup.enter="onLogin"></v-text-field>
 
-              <v-text-field
-                ref="pwd"
-                v-model="loginForm.password"
-                :rules="passwordRules"
-                label="密码"
-                prepend-inner-icon="mdi-key"
-                :append-icon="showLoginPassword ? 'mdi-eye' : 'mdi-eye-off'"
-                :type="showLoginPassword ? 'text' : 'password'"
-                @click:append="showLoginPassword = !showLoginPassword"
-                required
-                v-on:keyup.enter="onLogin"
-              ></v-text-field>
+              <v-text-field ref="pwd"
+                            v-model="loginForm.password"
+                            :rules="passwordRules"
+                            label="密码"
+                            prepend-inner-icon="mdi-key"
+                            :append-icon="showLoginPassword ? 'mdi-eye' : 'mdi-eye-off'"
+                            :type="showLoginPassword ? 'text' : 'password'"
+                            @click:append="showLoginPassword = !showLoginPassword"
+                            required
+                            v-on:keyup.enter="onLogin"></v-text-field>
 
-              <Vcode :show="vcodeShow" @success="success" @close="close" />
-              <v-checkbox v-model="checkPassword" label="记住密码"></v-checkbox>
+              <Vcode :show="vcodeShow"
+                     @success="success"
+                     @close="close" />
+              <v-checkbox v-model="checkPassword"
+                          label="记住密码"></v-checkbox>
 
-              <v-btn
-                style="width:40%; margin-right:20%"
-                :min-width="10"
-                color="success"
-                class="login-btn"
-                :loading="loginLoading"
-                @click="onLogin"
-              >
+              <v-btn style="width:40%; margin-right:20%"
+                     :min-width="10"
+                     color="success"
+                     class="login-btn"
+                     :loading="loginLoading"
+                     @click="onLogin">
                 登录
               </v-btn>
 
-              <v-btn
-                style="width:40%"
-                :min-width="10"
-                class="reg-btn"
-                @click="regDialog = true"
-              >
+              <v-btn style="width:40%"
+                     :min-width="10"
+                     class="reg-btn"
+                     @click="regDialog = true">
                 注册
               </v-btn>
             </v-form>
@@ -71,12 +68,10 @@
             </h4>
             <h4 style="color:rgb(124,116,111)">
               服务版本: {{ serviceVersion }}
-              <v-progress-circular
-                v-show="pullVersionLoading"
-                indeterminate
-                color="green"
-                :size="16"
-              ></v-progress-circular>
+              <v-progress-circular v-show="pullVersionLoading"
+                                   indeterminate
+                                   color="green"
+                                   :size="16"></v-progress-circular>
             </h4>
           </div>
         </div>
@@ -86,72 +81,71 @@
     <div class="nav-login-footer">
       <br />
       904 会议系统 | 学习交流 QQ(34787894) |
-      <a target="_blank" href="https://github.com/r3inbowari/meeting-admin"
-        >项目地址</a
-      >
+      <a target="_blank"
+         href="https://github.com/r3inbowari/meeting-admin">项目地址</a>
       <br />
       Copyright © 2017 - 2020 r3inbowari. All Rights Reserved.
     </div>
 
-    <v-snackbar
-      v-model="loginSnackbar"
-      :timeout="3000"
-      :color="snackbarColor"
-      top
-    >
+    <v-snackbar v-model="loginSnackbar"
+                :timeout="3000"
+                :color="snackbarColor"
+                top>
       {{ snackbarText }}
-      <v-btn text @click="loginSnackbar = false">
+      <v-btn text
+             @click="loginSnackbar = false">
         Close
       </v-btn>
     </v-snackbar>
 
     <!-- 注册对话框 -->
-    <v-dialog persistent v-model="regDialog" width="400">
+    <v-dialog persistent
+              v-model="regDialog"
+              width="400">
       <v-card>
-        <v-card-title class="headline grey lighten-2" primary-title
-          >用户注册申请</v-card-title
-        >
+        <v-card-title class="headline grey lighten-2"
+                      primary-title>用户注册申请</v-card-title>
 
         <v-card-text style="margin-top:20px">
-          <v-alert text dense color="teal" icon="mdi-clock-fast" border="left">
+          <v-alert text
+                   dense
+                   color="teal"
+                   icon="mdi-clock-fast"
+                   border="left">
             您的申请将会被审核, 请耐心等待!
           </v-alert>
 
-          <v-form
-            style="width:70%;margin-left:auto;margin-right:auto"
-            ref="regForm"
-            v-model="loginFormValid"
-          >
-            <v-text-field
-              v-model="regForm.username"
-              :rules="usernameRules"
-              label="用户名"
-              required
-            ></v-text-field>
+          <v-form style="width:70%;margin-left:auto;margin-right:auto"
+                  ref="regForm"
+                  v-model="loginFormValid">
+            <v-text-field v-model="regForm.username"
+                          :rules="usernameRules"
+                          label="用户名"
+                          required></v-text-field>
 
-            <v-text-field
-              v-model="regForm.uid"
-              :counter="12"
-              :rules="uidRules"
-              label="账号"
-              required
-            ></v-text-field>
+            <v-text-field v-model="regForm.uid"
+                          :counter="12"
+                          :rules="uidRules"
+                          label="账号"
+                          required></v-text-field>
 
-            <v-text-field
-              v-model="regForm.password"
-              :rules="passwordRules"
-              label="密码"
-              required
-              type="password"
-            ></v-text-field>
+            <v-text-field v-model="regForm.password"
+                          :rules="passwordRules"
+                          label="密码"
+                          required
+                          type="password"></v-text-field>
           </v-form>
         </v-card-text>
 
         <v-divider></v-divider>
         <v-card-actions>
           <v-spacer></v-spacer>
-          <v-btn color="succees" text @click="onCloseRegDialog">取消</v-btn>
-          <v-btn color="primary" text @click="onReg">确认</v-btn>
+          <v-btn color="succees"
+                 text
+                 @click="onCloseRegDialog">取消</v-btn>
+          <v-btn color="primary"
+                 text
+                 @click="onReg">确认</v-btn>
         </v-card-actions>
       </v-card>
     </v-dialog>
@@ -166,7 +160,7 @@ export default {
   components: {
     Vcode,
   },
-  data() {
+  data () {
     return {
       // 动态样式
       centerCss: "nav-login-center",
@@ -180,7 +174,7 @@ export default {
       snackbarText: "message",
 
       // 版本信息
-      visualVersion: "v1.0.7 2020.05.13 beta2",
+      visualVersion: "v1.1.2 2020.06.14 beta1",
       serviceVersion: "获取中",
       pullVersionLoading: true,
 
@@ -219,11 +213,11 @@ export default {
     };
   },
   methods: {
-    submitLogin() {
+    submitLogin () {
       this.vcodeShow = true;
     },
     // 用户通过了验证
-    success() {
+    success () {
       this.vcodeShow = false; // 通过验证后，需要手动隐藏模态框
       this.loginLoading = true;
       this.http
@@ -250,14 +244,14 @@ export default {
         });
     },
     // 用户点击遮罩层，应该关闭模态框
-    close() {
+    close () {
       this.vcodeShow = false;
     },
-    onCloseRegDialog() {
+    onCloseRegDialog () {
       this.regDialog = false;
       this.resetForm("regForm");
     },
-    onReg() {
+    onReg () {
       if (this.validate("regForm")) {
         this.onLogin();
         this.http
@@ -281,13 +275,13 @@ export default {
           });
       }
     },
-    validate(target) {
+    validate (target) {
       return this.$refs[target].validate();
     },
-    resetForm(target) {
+    resetForm (target) {
       return this.$refs[target].reset();
     },
-    onLogin() {
+    onLogin () {
       let that = this;
       if (this.validate("loginForm")) {
         this.submitLogin();
@@ -297,7 +291,7 @@ export default {
         }, 3000);
       }
     },
-    getVersion() {
+    getVersion () {
       this.http
         .get("api/serviceVersion", this.loginForm)
         .then((res) => {
@@ -312,7 +306,7 @@ export default {
           this.pullVersionLoading = false;
         });
     },
-    checkRemenber() {
+    checkRemenber () {
       let that = this;
       if (that.checkPassword == true) {
         console.log("checked -> true");
@@ -325,7 +319,7 @@ export default {
       }
     },
     // 设置cookie
-    setCookie(c_name, c_pwd, exdays) {
+    setCookie (c_name, c_pwd, exdays) {
       var exdate = new Date(); //获取时间
       exdate.setTime(exdate.getTime() + 24 * 60 * 60 * 1000 * exdays); //保存的天数
       //字符串拼接cookie
@@ -339,7 +333,7 @@ export default {
         exdate.toGMTString();
     },
     // 读取cookie
-    getCookie: function() {
+    getCookie: function () {
       console.log(document.cookie.length);
       if (document.cookie.length > 0) {
         var arr = document.cookie.split("; "); //这里显示的格式需要切割一下自己可输出看下
@@ -356,21 +350,21 @@ export default {
       }
     },
     // 清除cookie
-    clearCookie: function() {
+    clearCookie: function () {
       this.setCookie("", "", -1); //修改2值都为空，天数为负1天就好了
     },
     // 自动聚焦input
-    inputFocus(refName) {
+    inputFocus (refName) {
       this.$nextTick(() => {
         //正确写法
         this.$refs[refName].focus();
       });
     },
   },
-  beforeMount() {
+  beforeMount () {
     this.getCookie();
   },
-  mounted() {
+  mounted () {
     checkid();
     this.inputFocus("uid");
     window.onresize = () => {

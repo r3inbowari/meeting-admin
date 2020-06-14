@@ -105,9 +105,9 @@
               <div style="color: white">
                 <v-icon style="top:-1px"
                         small>update</v-icon>
-                v1.0.7-beta2(2d448a3..f3bb576) ahead branch origin/master built
-                at 2020/5/13 14:29:44 auto-deloy nginx-proxy [1] /api [2] /home
-                | @webpack_debug | loginid: {{ $root.accountInfo.uid }} | role:
+                v1.1.2-beta1(8681fe8..fc7f95b) ahead branch origin/master built
+                at 2020/06/14 20:10:44 by Travis CI | nginx-proxy [1] /api [2] /home
+                | loginid: {{ $root.accountInfo.uid }} | role:
                 {{ $root.accountInfo.role }} {{ debug_loading }}
                 {{ debug_loading1 }}
               </div>
