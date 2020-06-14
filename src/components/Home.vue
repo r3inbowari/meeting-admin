@@ -82,14 +82,14 @@
     </v-app-bar>
 
     <!-- Sizes your content based upon application components -->
-    <v-content style="background: rgb(255,249,245)">
+    <v-main style="background: rgb(255,249,245)">
       <!-- Provides the application the proper gutter -->
       <v-container style="height:100%"
                    fluid>
         <!-- vue-router sec here -->
         <router-view />
       </v-container>
-    </v-content>
+    </v-main>
 
     <v-footer style="background:#007ACC; height:16px; padding:0px"
               app>
@@ -105,7 +105,7 @@
               <div style="color: white">
                 <v-icon style="top:-1px"
                         small>update</v-icon>
-                v1.1.2-beta1(8681fe8..fc7f95b) ahead branch origin/master built
+                v1.1.2-beta1(fc7f95b..8a4b9b8) ahead branch origin/master built
                 at 2020/06/14 20:10:44 by Travis CI | nginx-proxy [1] /api [2] /home
                 | loginid: {{ $root.accountInfo.uid }} | role:
                 {{ $root.accountInfo.role }} {{ debug_loading }}
