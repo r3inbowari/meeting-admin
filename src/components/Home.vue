@@ -311,14 +311,15 @@ export default {
   beforeCreate () {
     console.log(new Date().toISOString());
 
-    this.http
-      .get("api/apply?time=" + new Date().toISOString() + "&rid=c51e456c-f6f4-4869-b688-bb72d64aaa52")
-      .then((res) => {
-        console.log(res);
-      })
-      .catch((err) => {
-        console.log(err);
-      });
+    // todo
+    // this.http
+    //   .get("api/apply?time=" + new Date().toISOString() + "&rid=c51e456c-f6f4-4869-b688-bb72d64aaa52")
+    //   .then((res) => {
+    //     console.log(res);
+    //   })
+    //   .catch((err) => {
+    //     console.log(err);
+    //   });
     checkhome();
   },
   beforeMount () {

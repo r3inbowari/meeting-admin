@@ -177,23 +177,55 @@ export default {
     },
   },
   mounted () {
-    console.log(new Date().toISOString());
     this.$refs.calendar.checkChange();
   },
   methods: {
+    // 更新数据表
+    updateEvent (obj) {
+      const events = [];
+
+      obj.forEach(element => {
+        events.push({
+          name: element.content,
+          start: this.formatDate(new Date(element.start)),
+          end: this.formatDate(new Date(element.end)),
+          color: 'orange',
+        })
+      });
+      this.events = events
+    },
+    // 获取数据
+    getRoomApply (s, e) {
+      let that = this
+      this.http
+        .get("api/apply?time=" + s + "&rid=c51e456c-f6f4-4869-b688-bb72d64aaa52&end=" + e)
+        .then((res) => {
+          console.log(res);
+          that.updateEvent(res.data.data)
+        })
+        .catch((err) => {
+          console.log(err);
+        });
+    },
+    // 点击单日时
     viewDay ({ date }) {
+      console.log('233');
+
       this.focus = date;
       this.type = "day";
     },
+    // 时间颜色
     getEventColor (event) {
       return event.color;
     },
     setToday () {
       this.focus = this.today;
     },
+    // 前一页
     prev () {
       this.$refs.calendar.prev();
     },
+    // 后一页
     next () {
       this.$refs.calendar.next();
     },
@@ -214,20 +246,14 @@ export default {
       nativeEvent.stopPropagation();
     },
     updateRange ({ start, end }) {
-      const events = [];
+      let a = new Date(start.date).toISOString()
+      let b = new Date(end.date).toISOString()
 
-      console.log(new Date("2020/5/14 23:55:55"));
-
-      events.push({
-        name: "实例",
-        start: this.formatDate(new Date()),
-        end: this.formatDate(new Date("2020/5/14 23:55:55")),
-        color: "orange",
-      });
-
+      this.getRoomApply(a, b)
       this.start = start;
       this.end = end;
-      this.events = events;
+      // 异步修改
+      // this.events = events;
     },
     formatDate (a) {
       return `${a.getFullYear()}-${a.getMonth() +
