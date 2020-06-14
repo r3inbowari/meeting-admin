@@ -12,7 +12,7 @@
                      class="mr-4"
                      color="grey darken-2"
                      @click="setToday">
-                今天
+                快速返回本日
               </v-btn>
               <v-btn fab
                      text
@@ -30,6 +30,12 @@
               </v-btn>
               <v-toolbar-title>{{ title }}</v-toolbar-title>
               <v-spacer></v-spacer>
+              <v-btn outlined
+                     class="mr-4"
+                     color="grey darken-2"
+                     @click="applyRoom">
+                申请课室
+              </v-btn>
               <v-menu bottom
                       right>
                 <template v-slot:activator="{ on }">
@@ -51,7 +57,7 @@
                     <v-list-item-title>月</v-list-item-title>
                   </v-list-item>
                   <v-list-item @click="type = '4day'">
-                    <v-list-item-title>4天</v-list-item-title>
+                    <v-list-item-title>四天</v-list-item-title>
                   </v-list-item>
                 </v-list>
               </v-menu>
@@ -82,22 +88,28 @@
                     <v-icon>mdi-pencil</v-icon>
                   </v-btn>
                   <v-toolbar-title v-html="selectedEvent.name"></v-toolbar-title>
-                  <v-spacer></v-spacer>
+                  <!-- <v-spacer></v-spacer>
                   <v-btn icon>
                     <v-icon>mdi-heart</v-icon>
                   </v-btn>
                   <v-btn icon>
                     <v-icon>mdi-dots-vertical</v-icon>
-                  </v-btn>
+                  </v-btn> -->
                 </v-toolbar>
                 <v-card-text>
-                  <span v-html="selectedEvent.details"></span>
+                  <span>开始时间: </span><span v-html="selectedEvent.start"></span>
+                  <br>
+                  <span>结束时间: </span><span v-html="selectedEvent.end"></span>
+                  <br>
+                  <span>会议内容: </span><span v-html="selectedEvent.details"></span>
+                  <br>
                 </v-card-text>
                 <v-card-actions>
+                  <v-spacer></v-spacer>
                   <v-btn text
-                         color="secondary"
+                         color="primary"
                          @click="selectedOpen = false">
-                    Cancel
+                    关闭
                   </v-btn>
                 </v-card-actions>
               </v-card>
@@ -106,6 +118,55 @@
         </v-col>
       </v-row>
     </v-card>
+
+    <v-row justify="center">
+      <v-dialog v-model="applyDialog"
+                persistent
+                max-width="600px">
+        <v-card>
+          <v-card-title>
+            <span class="headline">会议室申请</span>
+          </v-card-title>
+          <v-card-text>
+            <v-container>
+              <v-row>
+                <v-col cols="12">
+                  <v-select :items="roomNames"
+                            @change="onChangeList"
+                            label="会议室"
+                            required></v-select>
+                </v-col>
+                <v-col cols="12">
+                  <v-text-field label="开始时间"
+                                required></v-text-field>
+                </v-col>
+                <v-col cols="12">
+                  <v-text-field label="结束时间"
+                                required></v-text-field>
+                </v-col>
+                <v-col cols="12">
+                  <v-text-field label="提交时间"
+                                type="password"
+                                required></v-text-field>
+                </v-col>
+
+              </v-row>
+            </v-container>
+            <small style="color: red">*请选择一个合适的时间申请，请勿恶意申请，违者将追究责任！</small>
+          </v-card-text>
+          <v-card-actions>
+            <v-spacer></v-spacer>
+            <v-btn color="blue darken-1"
+                   text
+                   @click="applyDialog = false">取消</v-btn>
+            <v-btn color="blue darken-1"
+                   text
+                   @click="applyDialog = false">提交申请</v-btn>
+          </v-card-actions>
+        </v-card>
+      </v-dialog>
+    </v-row>
+
   </div>
 </template>
 
@@ -113,8 +174,20 @@
 export default {
   data () {
     return {
+      // 申请部分
+      applyDialog: false,
+      // 教室列表获取
+      roomList: '',
+      roomNames: [],
+      applyForm: {
+        content: '',
+        start: '',
+        end: '',
+        rid: ''
+      },
+      // 日历部分
       today: '2020-6-13 12:00:00',
-      carding: true,
+      carding: false,
       focus: "",
       type: "month",
       typeToLabel: {
@@ -183,19 +256,21 @@ export default {
     // 更新数据表
     updateEvent (obj) {
       const events = [];
-
-      obj.forEach(element => {
+      obj.forEach((element, index) => {
         events.push({
           name: element.content,
           start: this.formatDate(new Date(element.start)),
           end: this.formatDate(new Date(element.end)),
-          color: 'orange',
+          color: this.colors[index % 7],
+          details: element.content
         })
       });
       this.events = events
+      this.carding = false
     },
     // 获取数据
     getRoomApply (s, e) {
+      this.carding = true
       let that = this
       this.http
         .get("api/apply?time=" + s + "&rid=c51e456c-f6f4-4869-b688-bb72d64aaa52&end=" + e)
@@ -209,8 +284,6 @@ export default {
     },
     // 点击单日时
     viewDay ({ date }) {
-      console.log('233');
-
       this.focus = date;
       this.type = "day";
     },
@@ -218,6 +291,7 @@ export default {
     getEventColor (event) {
       return event.color;
     },
+    // 单天焦点
     setToday () {
       this.focus = this.today;
     },
@@ -246,19 +320,46 @@ export default {
       nativeEvent.stopPropagation();
     },
     updateRange ({ start, end }) {
-      let a = new Date(start.date).toISOString()
-      let b = new Date(end.date).toISOString()
-
-      this.getRoomApply(a, b)
+      this.getRoomApply(new Date(start.date).toISOString(), new Date(end.date).toISOString())
       this.start = start;
       this.end = end;
-      // 异步修改
+      // 异步修改，此次只需要修改范围
       // this.events = events;
     },
     formatDate (a) {
       return `${a.getFullYear()}-${a.getMonth() +
         1}-${a.getDate()} ${a.getHours()}:${a.getMinutes()}`;
     },
+    // ============================ 课室申请部分 =======================
+    // 窗口开启
+    applyRoom () {
+      this.getRoom()
+      this.applyDialog = true
+    },
+    // 教室获取
+    getRoom () {
+      let that = this
+      this.http
+        .get("api/apply/rooms")
+        .then((res) => {
+          that.roomList = res.data.data
+          that.roomList.forEach(res => {
+            this.roomNames.push(res.name)
+          })
+        })
+        .catch((err) => {
+          console.log(err);
+        });
+    },
+    // 教室列表更新
+    onChangeList (val) {
+      this.roomList.forEach(res => {
+        if (res.name === val) {
+          this.applyForm.rid = res.id
+          return
+        }
+      })
+    }
   },
 };
 </script>

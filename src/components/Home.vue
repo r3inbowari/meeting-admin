@@ -245,7 +245,7 @@ export default {
       items: [
         { title: "主页", icon: "mdi-view-dashboard", ref: "/home/dash" },
         { title: "物联网", icon: "settings_system_daydream", ref: "/home/iot" },
-        { title: "日程表", icon: "date_range", ref: "/home/iot2" },
+        { title: "日程表", icon: "date_range", ref: "/home/cal" },
         { title: "课室申请", icon: "event_note", ref: "/home/apply" },
         { title: "设置", icon: "settings_applications", ref: "/home/io6t" },
         { title: "关于", icon: "mdi-help-box", ref: "/home/io5t" },
