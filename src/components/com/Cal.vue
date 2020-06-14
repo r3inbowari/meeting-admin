@@ -1,5 +1,15 @@
 <template>
   <div style="height:100%">
+    <v-snackbar v-model="snackbar"
+                :timeout="3000"
+                :color="snackbarColor"
+                top>
+      {{ snackbarText }}
+      <v-btn text
+             @click="applySnackbar = false">
+        Close
+      </v-btn>
+    </v-snackbar>
     <v-card :loading="carding"
             elevation="4"
             height="100%">
@@ -47,17 +57,17 @@
                   </v-btn>
                 </template>
                 <v-list>
-                  <v-list-item @click="type = 'day'">
-                    <v-list-item-title>日</v-list-item-title>
+                  <v-list-item @click="type = 'month'">
+                    <v-list-item-title>月</v-list-item-title>
                   </v-list-item>
                   <v-list-item @click="type = 'week'">
                     <v-list-item-title>周</v-list-item-title>
                   </v-list-item>
-                  <v-list-item @click="type = 'month'">
-                    <v-list-item-title>月</v-list-item-title>
-                  </v-list-item>
                   <v-list-item @click="type = '4day'">
                     <v-list-item-title>四天</v-list-item-title>
+                  </v-list-item>
+                  <v-list-item @click="type = 'day'">
+                    <v-list-item-title>日</v-list-item-title>
                   </v-list-item>
                 </v-list>
               </v-menu>
@@ -120,6 +130,20 @@
     </v-card>
 
     <v-row justify="center">
+      <v-dialog v-model="appling"
+                hide-overlay
+                persistent
+                width="300">
+        <v-card color="primary"
+                dark>
+          <v-card-text>
+            正在提交申请
+            <v-progress-linear indeterminate
+                               color="white"
+                               class="mb-0"></v-progress-linear>
+          </v-card-text>
+        </v-card>
+      </v-dialog>
       <v-dialog v-model="applyDialog"
                 persistent
                 max-width="600px">
@@ -129,28 +153,100 @@
           </v-card-title>
           <v-card-text>
             <v-container>
-              <v-row>
-                <v-col cols="12">
-                  <v-select :items="roomNames"
-                            @change="onChangeList"
-                            label="会议室"
-                            required></v-select>
-                </v-col>
-                <v-col cols="12">
-                  <v-text-field label="开始时间"
-                                required></v-text-field>
-                </v-col>
-                <v-col cols="12">
-                  <v-text-field label="结束时间"
-                                required></v-text-field>
-                </v-col>
-                <v-col cols="12">
-                  <v-text-field label="提交时间"
-                                type="password"
-                                required></v-text-field>
-                </v-col>
+              <v-form ref="applyForm"
+                      v-model="applyFormValid">
+                <v-row>
+                  <v-col cols="12">
+                    <v-select :items="roomNames"
+                              :rules="timeRules"
+                              @change="onChangeList"
+                              label="会议室"
+                              required></v-select>
+                  </v-col>
 
-              </v-row>
+                  <v-col cols="12">
+                    <v-menu v-model="menu1"
+                            :close-on-content-click="false"
+                            :nudge-right="40"
+                            transition="scale-transition"
+                            offset-y
+                            min-width="290px">
+                      <template v-slot:activator="{ on, attrs }">
+                        <v-text-field v-model="time1"
+                                      :rules="timeRules"
+                                      label="选择一个日期"
+                                      prepend-icon="event"
+                                      readonly
+                                      v-bind="attrs"
+                                      v-on="on"></v-text-field>
+                      </template>
+                      <v-date-picker v-model="time1"
+                                     @input="menu1 = false"></v-date-picker>
+                    </v-menu>
+                  </v-col>
+
+                  <v-col cols="6">
+                    <v-menu ref="menu2"
+                            v-model="menu2"
+                            :close-on-content-click="false"
+                            :nudge-right="40"
+                            :return-value.sync="time2"
+                            transition="scale-transition"
+                            offset-y
+                            max-width="290px"
+                            min-width="290px">
+                      <template v-slot:activator="{ on, attrs }">
+                        <v-text-field v-model="time2"
+                                      :rules="timeRules"
+                                      label="开始时间"
+                                      prepend-icon="access_time"
+                                      readonly
+                                      v-bind="attrs"
+                                      v-on="on"></v-text-field>
+                      </template>
+                      <v-time-picker v-if="menu2"
+                                     v-model="time2"
+                                     full-width
+                                     @click:minute="$refs.menu2.save(time2)"></v-time-picker>
+                    </v-menu>
+                  </v-col>
+
+                  <v-col cols="6">
+                    <v-menu ref="menu3"
+                            v-model="menu3"
+                            :close-on-content-click="false"
+                            :nudge-right="40"
+                            :return-value.sync="time3"
+                            transition="scale-transition"
+                            offset-y
+                            max-width="290px"
+                            min-width="290px">
+                      <template v-slot:activator="{ on, attrs }">
+                        <v-text-field v-model="time3"
+                                      :rules="timeRules"
+                                      label="结束时间"
+                                      prepend-icon="access_time"
+                                      readonly
+                                      v-bind="attrs"
+                                      v-on="on"></v-text-field>
+                      </template>
+                      <v-time-picker v-if="menu3"
+                                     v-model="time3"
+                                     full-width
+                                     @click:minute="$refs.menu3.save(time3)"></v-time-picker>
+                    </v-menu>
+                  </v-col>
+
+                  <v-col cols="12">
+                    <v-textarea outlined
+                                :rules="contentRules"
+                                name="input-7-4"
+                                label="会议内容"
+                                v-model="applyForm.content"></v-textarea>
+                  </v-col>
+
+                </v-row>
+              </v-form>
             </v-container>
             <small style="color: red">*请选择一个合适的时间申请，请勿恶意申请，违者将追究责任！</small>
           </v-card-text>
@@ -158,10 +254,10 @@
             <v-spacer></v-spacer>
             <v-btn color="blue darken-1"
                    text
-                   @click="applyDialog = false">取消</v-btn>
+                   @click="onApplyCancel">取消</v-btn>
             <v-btn color="blue darken-1"
                    text
-                   @click="applyDialog = false">提交申请</v-btn>
+                   @click="onApplyPost">提交申请</v-btn>
           </v-card-actions>
         </v-card>
       </v-dialog>
@@ -174,7 +270,27 @@
 export default {
   data () {
     return {
+      // public snackbar
+      snackbarColor: "red",
+      snackbarText: '',
+      snackbar: false,
+
       // 申请部分
+      applyFormValid: true,
+      timeRules: [
+        (v) => !!v || "这是必填项哦",
+      ],
+      contentRules: [
+        (v) => !!v || "会议内容也是必填的哦",
+        (v) => (v && v.length <= 100 && v.length > 4) || "会议内容限制在5-100字之间",
+      ],
+      appling: false,
+      time1: null,
+      time2: null,
+      time3: null,
+      menu1: false,
+      menu2: false,
+      menu3: false,
       applyDialog: false,
       // 教室列表获取
       roomList: '',
@@ -331,6 +447,59 @@ export default {
         1}-${a.getDate()} ${a.getHours()}:${a.getMinutes()}`;
     },
     // ============================ 课室申请部分 =======================
+    validate (target) {
+      return this.$refs[target].validate();
+    },
+    resetForm (target) {
+      return this.$refs[target].reset();
+    },
+    // 取消申请框
+    onApplyCancel () {
+      this.applyDialog = false
+      this.$refs.applyForm.resetValidation();
+    },
+    // 提交申请
+    onApplyPost () {
+
+      if (this.validate("applyForm")) {
+        this.appling = true
+        this.applyForm.start = new Date(this.time1 + " " + this.time2).toISOString()
+        this.applyForm.end = new Date(this.time1 + " " + this.time3).toISOString()
+
+        this.http.post("api/apply", this.applyForm)
+          .then(res => {
+            this.appling = false
+            this.applyDialog = false
+            console.log(res);
+            this.resetForm('applyForm')
+
+            if (res.data.data === 'time has been occupied') {
+              this.snackbarColor = 'red'
+              this.snackbarText = '申请失败, 该时间已被占用!'
+            } else {
+              // refresh view
+              let newMonth = parseInt(new Date().getMonth()) + 1;
+              let newYear = parseInt(new Date().getFullYear());
+              let op = new Date(newYear, newMonth - 1, 1)
+              let ed = new Date(newYear, newMonth, 0, 23, 59, 59)
+              this.getRoomApply(op.toISOString(), ed.toISOString())
+              this.snackbarColor = 'green'
+              this.snackbarText = '申请成功'
+            }
+            this.snackbar = true
+          })
+          .catch(err => {
+            console.log(err)
+          })
+      }
+    },
+    // 获取一个月第一天和最后一天
+    getFirstAndLastDay () {
+      let newMonth = parseInt(new Date().getMonth()) + 1;
+      let newYear = parseInt(new Date().getFullYear());
+      new Date(newYear, newMonth - 1, 1).getTime()
+      new Date(newYear, newMonth, 0).getTime()
+    },
     // 窗口开启
     applyRoom () {
       this.getRoom()

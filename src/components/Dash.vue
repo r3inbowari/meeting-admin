@@ -3,9 +3,8 @@
     <v-row>
       <v-col cols="4">
         <Temp class="card-temp"></Temp>
-        <Condition v-show="false"
-                   class="card-condition"></Condition>
-        <Apply></Apply>
+        <Condition class="card-condition"></Condition>
+        <!-- <Apply></Apply> -->
       </v-col>
       <v-col cols="4">
         <Notice></Notice>
@@ -24,14 +23,12 @@ import Condition from "@/components/com/Condition";
 import Timeline from "@/components/com/Timeline";
 import Notice from "@/components/com/Notice";
 
-import Apply from "@/components/com/Apply";
 export default {
   components: {
     Temp,
     Condition,
     Timeline,
-    Notice,
-    Apply
+    Notice
   },
   data () {
     return {};

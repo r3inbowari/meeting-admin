@@ -246,9 +246,9 @@ export default {
         { title: "主页", icon: "mdi-view-dashboard", ref: "/home/dash" },
         { title: "物联网", icon: "settings_system_daydream", ref: "/home/iot" },
         { title: "日程表", icon: "date_range", ref: "/home/cal" },
-        { title: "课室申请", icon: "event_note", ref: "/home/apply" },
-        { title: "设置", icon: "settings_applications", ref: "/home/io6t" },
-        { title: "关于", icon: "mdi-help-box", ref: "/home/io5t" },
+        // { title: "课室申请", icon: "event_note", ref: "/home/apply" },
+        // { title: "设置", icon: "settings_applications", ref: "/home/io6t" },
+        // { title: "关于", icon: "mdi-help-box", ref: "/home/io5t" },
       ],
       background: "",
       drawer: true,
@@ -356,11 +356,11 @@ export default {
               icon: "assignment_turned_in",
               ref: "/home/account-audit",
             },
-            {
-              title: "课室审核",
-              icon: "assignment_turned_in",
-              ref: "/home/dash4",
-            }
+            // {
+            //   title: "课室审核",
+            //   icon: "assignment_turned_in",
+            //   ref: "/home/dash4",
+            // }
           );
         }
       })
