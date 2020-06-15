@@ -80,7 +80,7 @@
 
     <div class="nav-login-footer">
       <br />
-      904 会议系统 | 学习交流 QQ(34787894) |
+      904 会议系统 | 友情链接 |
       <a target="_blank"
          href="https://github.com/r3inbowari/meeting-admin">项目地址</a>
       <br />

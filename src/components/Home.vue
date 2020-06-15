@@ -105,7 +105,7 @@
               <div style="color: white">
                 <v-icon style="top:-1px"
                         small>update</v-icon>
-                v1.1.2-beta1(fc7f95b..8a4b9b8) ahead branch origin/master built
+                v1.1.2-beta1(8a4b9b8..3ff633c) ahead branch origin/master built
                 at 2020/06/14 20:10:44 by Travis CI | nginx-proxy [1] /api [2] /home
                 | loginid: {{ $root.accountInfo.uid }} | role:
                 {{ $root.accountInfo.role }} {{ debug_loading }}
