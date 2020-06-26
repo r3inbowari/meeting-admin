@@ -249,6 +249,7 @@ export default {
         // { title: "课室申请", icon: "event_note", ref: "/home/apply" },
         // { title: "设置", icon: "settings_applications", ref: "/home/io6t" },
         // { title: "关于", icon: "mdi-help-box", ref: "/home/io5t" },
+        { title: "我的申请", icon: "date_range", ref: "/home/myapply" }
       ],
       background: "",
       drawer: true,

@@ -10,7 +10,7 @@ import Index from "@/components/Index";
 import Account from "@/components/UserCenter";
 import Apply from "@/components/Apply";
 import Cala from "@/components/Cala";
-
+import MyApply from "@/components/MyApply"
 Vue.use(Router);
 
 // const originalPush = Router.prototype.push;
@@ -47,6 +47,10 @@ export default new Router({
         {
           path: "apply",
           component: Apply,
+        },
+        {
+          path: "myapply",
+          component: MyApply,
         },
         {
           path: "cal",
