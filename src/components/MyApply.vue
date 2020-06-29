@@ -3,23 +3,30 @@
     <v-row style="height:100%">
       <v-col :cols="3">
         <v-card class="mx-auto"
-                style="height:100%"
+                style="height:660px; overflow:hidden"
                 tile>
-          <v-list nav>
-            <v-subheader>我的申请</v-subheader>
-            <v-list-item-group v-model="item"
-                               color="primary">
-              <v-list-item v-for="(item, i) in items"
-                           :key="i">
-                <v-list-item-icon>
-                  <v-icon v-text="item.icon"></v-icon>
-                </v-list-item-icon>
-                <v-list-item-content>
-                  <v-list-item-title v-text="item.text"></v-list-item-title>
-                </v-list-item-content>
-              </v-list-item>
-            </v-list-item-group>
-          </v-list>
+          <vue-scroll :ops="ops">
+            <v-list nav>
+              <v-subheader>
+                <div style="font-weight: 900; font-size:18px">我的申请(最近30天)</div>
+              </v-subheader>
+
+              <v-list-item-group v-model="item"
+                                 color="primary">
+                <v-list-item v-for="(item, i) in myapplys"
+                             :key="i"
+                             @click="onSwitchApply(i)">
+                  <v-list-item-icon>
+                    <v-icon v-text="lefticon"></v-icon>
+                  </v-list-item-icon>
+                  <v-list-item-content>
+                    <v-list-item-title v-text="item.content"></v-list-item-title>
+                  </v-list-item-content>
+                </v-list-item>
+              </v-list-item-group>
+
+            </v-list>
+          </vue-scroll>
         </v-card>
       </v-col>
 
@@ -59,16 +66,16 @@
                             subheader>
                       <v-subheader inset>文件列表</v-subheader>
 
-                      <v-list-item v-for="item in items2"
-                                   :key="item.title">
+                      <v-list-item v-for="item in myapplyfiles"
+                                   :key="item.id">
                         <v-list-item-avatar>
-                          <v-icon :class="[item.iconClass]"
-                                  v-text="item.icon"></v-icon>
+                          <v-icon :class="itemfileiconclass"
+                                  v-text="itemfileicon"></v-icon>
                         </v-list-item-avatar>
 
                         <v-list-item-content>
-                          <v-list-item-title v-text="item.title"></v-list-item-title>
-                          <v-list-item-subtitle v-text="item.subtitle"></v-list-item-subtitle>
+                          <v-list-item-title v-text="item.name"></v-list-item-title>
+                          <div style="color: rgb(188,192,196); font-size: 14px">{{item.create | dateformat('YYYY-MM-DD HH:mm:ss')}}</div>
                         </v-list-item-content>
 
                         <v-list-item-action>
@@ -82,13 +89,8 @@
                     <v-footer absolute>
                       <v-col class="text-center"
                              cols="12">
-                        <v-pagination v-model="page"
-                                      :circle="circle"
-                                      :length="length"
-                                      :next-icon="nextIcon"
-                                      :prev-icon="prevIcon"
-                                      :page="page"
-                                      :total-visible="totalVisible"></v-pagination>
+                        <v-pagination v-model="filePage"
+                                      :length="filePageSum"></v-pagination>
                       </v-col>
 
                     </v-footer>
@@ -103,8 +105,8 @@
                       <v-list-item v-for="item in items2"
                                    :key="item.title">
                         <v-list-item-avatar>
-                          <v-icon :class="[item.iconClass]"
-                                  v-text="item.icon"></v-icon>
+                          <v-icon :class="itemfileiconclass"
+                                  v-text="itemfileicon"></v-icon>
                         </v-list-item-avatar>
 
                         <v-list-item-content>
@@ -124,12 +126,7 @@
                       <v-col class="text-center"
                              cols="12">
                         <v-pagination v-model="page"
-                                      :circle="circle"
-                                      :length="length"
-                                      :next-icon="nextIcon"
-                                      :prev-icon="prevIcon"
-                                      :page="page"
-                                      :total-visible="totalVisible"></v-pagination>
+                                      :length="filePageSum"></v-pagination>
                       </v-col>
 
                     </v-footer>
@@ -148,10 +145,17 @@
 </template>
 
 <script>
+
 export default {
   data () {
     return {
+      lefticon: "mdi-clock",
       page: 1,
+
+      // file current page
+      filePage: 1,
+      // file sumup pages
+      filePageSum: 0,
       length: 3,
       ops: {
         rail: {
@@ -164,20 +168,68 @@ export default {
           background: "#cecece"
         }
       },
-      item: 1,
+      item: 0,
+      myapplys: [],
+      myapplyfiles: [],
       items: [
         { text: 'Real-Time', icon: 'mdi-clock' },
-        { text: 'Audience', icon: 'mdi-account' },
-        { text: 'Conversions', icon: 'mdi-flag' },
       ],
       // max 4 per page
       items2: [
+        { icon: 'assignment', iconClass: 'blue white--text', title: 'Vacation itinerary2', subtitle: 'Jan 20, 2014' },
+        { icon: 'call_to_action', iconClass: 'amber white--text', title: 'Kitchen remodel2', subtitle: 'Jan 10, 2014' },
         { icon: 'assignment', iconClass: 'blue white--text', title: 'Vacation itinerary', subtitle: 'Jan 20, 2014' },
-        { icon: 'call_to_action', iconClass: 'amber white--text', title: 'Kitchen remodel', subtitle: 'Jan 10, 2014' },
-        { icon: 'assignment', iconClass: 'blue white--text', title: 'Vacation itinerary', subtitle: 'Jan 20, 2014' },
-        { icon: 'call_to_action', iconClass: 'amber white--text', title: 'Kitchen remodel', subtitle: 'Jan 10, 2014' },
+        { icon: 'call_to_action', iconClass: 'amber white--text', title: 'Kitchen remodel3', subtitle: 'Jan 10, 2014' },
       ],
+      itemfileiconclass: "amber white--text",
+      itemfileicon: "assignment"
     }
+  },
+  methods: {
+    getMyApplyList () {
+      this.http
+        .get("api/applym")
+        .then((res) => {
+          console.log(res.data.data);
+          this.myapplys = res.data.data;
+          if (this.myapplys.length > 0) {
+            this.firstFetch(0);
+          }
+        })
+        .catch((err) => {
+          console.log(err);
+        });
+    },
+    /**
+     * @param id apply_id
+     */
+    getApplyFile (id) {
+      this.http
+        .get("api/meeting/filenames/" + id)
+        .then(res => {
+          console.log(res.data.data);
+          this.myapplyfiles = res.data.data;
+          this.filePageSum = parseInt(this.myapplyfiles.length / 4 + this.myapplyfiles.length % 4);
+        })
+        .catch(err => {
+          console.log(err);
+        })
+    },
+    onSwitchApply (val) {
+      if (val != this.item) {
+        let applyid = this.myapplys[val].id
+        this.getApplyFile(applyid);
+      }
+    },
+    firstFetch (val) {
+      let applyid = this.myapplys[val].id
+      this.getApplyFile(applyid);
+    }
+  },
+  mounted () {
+    this.getMyApplyList();
+    // console.log(parseInt(6 / 4));
+
   }
 }
 </script>
@@ -209,9 +261,6 @@ export default {
   margin-right: 20px;
   padding: 20px;
   height: 60px;
-}
-
-.action-can {
 }
 
 .ac-content {

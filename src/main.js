@@ -11,6 +11,14 @@ import "./assets/icon.css";
 // scroll
 import vuescroll from "vuescroll";
 
+// moment.js
+import moment from 'moment';
+// 中文简体
+moment.locale('zh-cn');
+Vue.filter('dateformat', (dataStr, pattern = 'YYYY-MM-DD HH:mm:ss') => {
+  return moment(dataStr).format(pattern)
+})
+
 Vue.use(vuescroll, {
 
 })
