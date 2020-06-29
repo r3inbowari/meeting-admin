@@ -43,10 +43,16 @@
                   <div style="background: rgb(243,66,95); height:25px; border-bottom-left-radius: 0; border-bottom-right-radius: 0;"></div>
                 </v-card>
               </v-col>
-              <v-col>
+              <v-col :cols="8">
                 <div class="title-clu">会议名称
                   <div class="title-addr">地点</div>
                 </div>
+              </v-col>
+              <v-col :cols="2">
+                <Upload style="margin-top:10px"
+                        action="/meeting/file/f860823d-912b-488b-a099-cc25d5408426">
+                  <Button icon="ios-cloud-upload-outline">上传文件</Button>
+                </Upload>
               </v-col>
             </v-row>
 
@@ -64,7 +70,8 @@
 
                     <v-list two-line
                             subheader>
-                      <v-subheader inset>文件列表</v-subheader>
+                      <v-subheader inset>文件列表
+                      </v-subheader>
 
                       <v-list-item v-for="item in myapplyfiles"
                                    :key="item.id">
@@ -209,7 +216,13 @@ export default {
         .then(res => {
           console.log(res.data.data);
           this.myapplyfiles = res.data.data;
-          this.filePageSum = parseInt(this.myapplyfiles.length / 4 + this.myapplyfiles.length % 4);
+          // 分页计算
+          if (this.myapplyfiles.length === 0) {
+            this.filePageSum = 1;
+          } else {
+            this.filePageSum = parseInt(this.myapplyfiles.length + 3) / 4;
+          }
+
         })
         .catch(err => {
           console.log(err);

@@ -13,11 +13,15 @@ import vuescroll from "vuescroll";
 
 // moment.js
 import moment from 'moment';
-// 中文简体
+// zhcn
 moment.locale('zh-cn');
 Vue.filter('dateformat', (dataStr, pattern = 'YYYY-MM-DD HH:mm:ss') => {
   return moment(dataStr).format(pattern)
 })
+
+import ViewUI from 'view-design';
+import 'view-design/dist/styles/iview.css';
+Vue.use(ViewUI);
 
 Vue.use(vuescroll, {
 
