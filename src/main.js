@@ -8,6 +8,13 @@ import "material-design-icons-iconfont/dist/material-design-icons.css";
 import "./assets/iconfont.js";
 import "./assets/icon.css";
 
+// scroll
+import vuescroll from "vuescroll";
+
+Vue.use(vuescroll, {
+
+})
+
 import http from "./libs/http.js";
 Vue.prototype.http = http; // axios原型
 
@@ -16,7 +23,7 @@ Vue.config.productionTip = false;
 new Vue({
   router,
   vuetify,
-  data() {
+  data () {
     return {
       myEvent: new Vue(),
       accountInfo: {},

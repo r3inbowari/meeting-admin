@@ -1,4 +1,5 @@
 const CompressionWebpackPlugin = require("compression-webpack-plugin")
+const mainProxyURL = "http://192.168.2.102:9999/"
 
 module.exports = {
   configureWebpack: config => {
@@ -29,7 +30,8 @@ module.exports = {
       "/api": {
         // target: "http://192.168.5.67:9999/",
         // target: "http://192.168.3.91:9999/",
-        target: "http://172.20.10.2:9999/",
+        // target: "http://172.20.10.2:9999/",
+        target: mainProxyURL,
         ws: true,
         changeOrigin: true,
         pathRewrite: {
@@ -39,7 +41,8 @@ module.exports = {
       "/home/picbed/user/avatar": {
         // target: "http://192.168.5.67:9999/",
         // target: "http://192.168.3.91:9999/",
-        target: "http://172.20.10.2:9999/",
+        // target: "http://172.20.10.2:9999/",
+        target: mainProxyURL,
         ws: true,
         changeOrigin: true,
         pathRewrite: {
