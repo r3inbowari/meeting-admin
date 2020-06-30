@@ -39,6 +39,15 @@ service.interceptors.response.use(
 export default {
   service,
 
+  download (url, data) {
+    return service({
+      url: url,
+      responseType: 'blob',
+      method: 'get',
+      data,
+    })
+  },
+
   //get请求
   get (url, data) {
     return service({

@@ -1,5 +1,35 @@
 <template>
   <div>
+    <v-snackbar v-model="appSnackbar"
+                top
+                :timeout="3000">
+      {{ appSnackbarText }}
+
+      <template v-slot:action="{ attrs }">
+        <v-btn color="pink"
+               text
+               v-bind="attrs"
+               @click="appSnackbar = false">
+          Close
+        </v-btn>
+      </template>
+    </v-snackbar>
+
+    <v-dialog v-model="dialog"
+              hide-overlay
+              persistent
+              width="300">
+      <v-card color="primary"
+              dark>
+        <v-card-text>
+          上传中
+          <v-progress-linear indeterminate
+                             color="white"
+                             class="mb-0"></v-progress-linear>
+        </v-card-text>
+      </v-card>
+    </v-dialog>
+
     <v-row style="height:100%">
       <v-col :cols="3">
         <v-card class="mx-auto"
@@ -51,7 +81,11 @@
               <v-col :cols="2">
                 <Upload style="margin-top:10px"
                         :headers="headers"
-                        action="filebed/meeting/file/0e63a411-dc05-4ae6-ac4d-db0f7499fb46">
+                        :on-success="uploadSucceed"
+                        :on-error="uploadFailed"
+                        :before-upload="uploadPre"
+                        :show-upload-list="false"
+                        :action="currentApplyIDUpload">
                   <Button icon="ios-cloud-upload-outline">上传文件</Button>
                 </Upload>
               </v-col>
@@ -87,7 +121,8 @@
                         </v-list-item-content>
 
                         <v-list-item-action>
-                          <v-btn icon>
+                          <v-btn @click="onDownload(item.id)"
+                                 icon>
                             <v-icon color="grey lighten-1">mdi-download</v-icon>
                           </v-btn>
                         </v-list-item-action>
@@ -157,6 +192,11 @@
 export default {
   data () {
     return {
+      currentApplyIDUpload: "",
+      dialog: false,
+      appSnackbar: false,
+      appSnackbarText: "",
+      currentApplyID: "",
       headers: {
         "Authorization": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE1OTM0OTcwNjMsImp0aSI6ImFkbWluIiwiaXNzIjoicjNpbmIiLCJuYmYiOjE1OTM0MTA2NjN9.M7xLEVukDwrYoHjxIgV0RHiaVX9riZYeYde2mfbP0wI"
       },
@@ -240,19 +280,215 @@ export default {
         this.myapppyfileschunk.length = 0;
         this.filePage = 1;
         this.filePageSum = 1;
-        let applyid = this.myapplys[val].id
-        this.getApplyFile(applyid);
+        this.currentApplyID = this.myapplys[val].id
+        this.currentApplyIDUpload = "filebed/meeting/file/" + this.currentApplyID;
+        this.getApplyFile(this.currentApplyID);
 
       }
     },
     firstFetch (val) {
-      let applyid = this.myapplys[val].id
-      this.getApplyFile(applyid);
+      this.currentApplyID = this.myapplys[val].id
+      this.currentApplyIDUpload = "filebed/meeting/file/" + this.currentApplyID;
+      this.getApplyFile(this.currentApplyID);
+    },
+    uploadSucceed (response, file, fileList) {
+      console.log(response);
+      console.log(file);
+      console.log(fileList);
+      this.getApplyFile(this.currentApplyID);
+      this.dialog = false;
+      this.appSnackbarText = "上传成功";
+      this.appSnackbar = true;
+    },
+    uploadFailed (error, file, fileList) {
+      console.log(error);
+      console.log(file);
+      console.log(fileList);
+      this.dialog = false;
+      this.appSnackbarText = "上传失败";
+      this.appSnackbar = true;
+    },
+    uploadPre (file) {
+      console.log(file);
+      this.dialog = true;
+    },
+
+
+
+
+
+    Dig2Dec (s) {
+      let retV = 0;
+      if (s.length == 4) {
+        for (let i = 0; i < 4; i++) {
+          retV += eval(s.charAt(i)) * Math.pow(2, 3 - i);
+        }
+        return retV;
+      }
+      return -1;
+    },
+
+
+
+    Hex2Utf8 (s) {
+      let retS = "";
+      let tempS = "";
+      let ss = "";
+      if (s.length == 16) {
+        tempS = "1110" + s.substring(0, 4);
+        tempS += "10" + s.substring(4, 10);
+        tempS += "10" + s.substring(10, 16);
+        let sss = "0123456789ABCDEF";
+        for (let i = 0; i < 3; i++) {
+          retS += "%";
+          ss = tempS.substring(i * 8, (eval(i) + 1) * 8);
+          retS += sss.charAt(this.Dig2Dec(ss.substring(0, 4)));
+          retS += sss.charAt(this.Dig2Dec(ss.substring(4, 8)));
+        }
+        return retS;
+      }
+      return "";
+    },
+    Dec2Dig (n1) {
+      let s = "";
+      let n2 = 0;
+      for (let i = 0; i < 4; i++) {
+        n2 = Math.pow(2, 3 - i);
+        if (n1 >= n2) {
+          s += '1';
+          n1 = n1 - n2;
+        }
+        else
+          s += '0';
+      }
+      return s;
+    },
+
+    Str2Hex (s) {
+      let c = "";
+      let n;
+      let ss = "0123456789ABCDEF";
+      let digS = "";
+      for (let i = 0; i < s.length; i++) {
+        c = s.charAt(i);
+        n = ss.indexOf(c);
+        digS += this.Dec2Dig(eval(n));
+      }
+      return digS;
+    },
+    Gb2312ToUtf8 (s1) {
+      let s = escape(s1);
+      let sa = s.split("%");
+      let retV = "";
+      if (sa[0] != "") {
+        retV = sa[0];
+      }
+      for (let i = 1; i < sa.length; i++) {
+        if (sa[i].substring(0, 1) == "u") {
+          retV += this.Hex2Utf8(this.Str2Hex(sa[i].substring(1, 5)));
+          if (sa[i].length) {
+            retV += sa[i].substring(5);
+          }
+        }
+        else {
+          retV += unescape("%" + sa[i]);
+          if (sa[i].length) {
+            retV += sa[i].substring(5);
+          }
+        }
+      }
+      return retV;
+    },
+    Utf8ToGb2312 (str1) {
+      let substr = "";
+      let a = "";
+      let b = "";
+      let c = "";
+      let i = -1;
+      i = str1.indexOf("%");
+      if (i == -1) {
+        return str1;
+      }
+      while (i != -1) {
+        if (i < 3) {
+          substr = substr + str1.substr(0, i - 1);
+          str1 = str1.substr(i + 1, str1.length - i);
+          a = str1.substr(0, 2);
+          str1 = str1.substr(2, str1.length - 2);
+          if (parseInt("0x" + a) & 0x80 == 0) {
+            substr = substr + String.fromCharCode(parseInt("0x" + a));
+          }
+          else if (parseInt("0x" + a) & 0xE0 == 0xC0) { //two byte
+            b = str1.substr(1, 2);
+            str1 = str1.substr(3, str1.length - 3);
+            let widechar = (parseInt("0x" + a) & 0x1F) << 6;
+            widechar = widechar | (parseInt("0x" + b) & 0x3F);
+            substr = substr + String.fromCharCode(widechar);
+          }
+          else {
+            b = str1.substr(1, 2);
+            str1 = str1.substr(3, str1.length - 3);
+            c = str1.substr(1, 2);
+            str1 = str1.substr(3, str1.length - 3);
+            let widechar = (parseInt("0x" + a) & 0x0F) << 12;
+            widechar = widechar | ((parseInt("0x" + b) & 0x3F) << 6);
+            widechar = widechar | (parseInt("0x" + c) & 0x3F);
+            substr = substr + String.fromCharCode(widechar);
+          }
+        }
+        else {
+          substr = substr + str1.substring(0, i);
+          str1 = str1.substring(i);
+        }
+        i = str1.indexOf("%");
+      }
+
+      return substr + str1;
+    },
+
+
+    onDownload (id) {
+      console.log("down...: ", id);
+      // window.location.href = ? 
+
+
+      this.http
+        .download("api/meeting/file/" + id)
+        .then(res => {
+          console.log(res.data.headers);
+
+          // let fileName = res.headers['content-disposition'].split('=')[1];
+          let fileNameH = res.headers['content-disposition'];
+          let fileName = "";
+          let filenameRegex = /filename[^;=\n]*=((['"]).*?\2|[^;\n]*)/;
+          let matches = filenameRegex.exec(fileNameH);
+          if (matches != null && matches[1]) {
+            fileName = matches[1].replace(/['"]/g, '');
+          }
+
+          console.log(decodeURI(fileName));
+          let blob = new Blob([res.data]);
+          console.log(blob);
+
+          const a = document.createElement("a")
+          a.href = URL.createObjectURL(blob)
+          a.download = decodeURI(fileName)
+          a.click()
+          URL.revokeObjectURL(a.href)
+          a.remove();
+
+          // let objectUrl = URL.createObjectURL(blob);
+          // window.location.href = objectUrl;
+          // window.open(objectUrl, '_blank')
+        })
+        .catch(err => {
+          console.log(err);
+
+        })
     }
   },
   mounted () {
     this.getMyApplyList();
-    // console.log(parseInt(6 / 4));
 
   }
 }
