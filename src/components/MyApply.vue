@@ -107,7 +107,7 @@
                   <div style="background: rgb(243,66,95); height:25px; border-bottom-left-radius: 0; border-bottom-right-radius: 0;"></div>
                 </v-card>
               </v-col>
-              <v-col :cols="6">
+              <v-col :cols="8">
                 <div class="title-clu">{{myapplys[item].content }}
                   <div class="title-addr">906会议室</div>
                 </div>
@@ -122,14 +122,11 @@
                         :action="currentApplyIDUpload">
                   <Button icon="ios-cloud-upload-outline">上传文件</Button>
                 </Upload>
-              </v-col>
-
-              <v-col :cols="2">
                 <Button style="margin-top:10px"
                         icon="ios-cloud-upload-outline"
                         @click="addDialog = true">添加人员</Button>
-
               </v-col>
+
             </v-row>
 
             <!-- 内容 -->
