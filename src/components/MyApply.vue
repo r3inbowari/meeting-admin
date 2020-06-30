@@ -30,6 +30,40 @@
       </v-card>
     </v-dialog>
 
+    <v-dialog v-model="addDialog"
+              persistent
+              max-width="300px">
+      <v-card>
+        <v-card-title>
+          <span class="headline">添加与会人员</span>
+        </v-card-title>
+        <v-card-text>
+          <v-container>
+            <v-row>
+              <v-col cols="12">
+                <v-form ref="addForm"
+                        v-model="formValid">
+                  <v-text-field label="姓名"
+                                v-model="joinName"
+                                :rules="joinNameRules"
+                                required></v-text-field>
+                </v-form>
+              </v-col>
+            </v-row>
+          </v-container>
+        </v-card-text>
+        <v-card-actions>
+          <v-spacer></v-spacer>
+          <v-btn color="blue darken-1"
+                 text
+                 @click="addDialog = false">取消</v-btn>
+          <v-btn color="blue darken-1"
+                 text
+                 @click="onAddPerson">确定</v-btn>
+        </v-card-actions>
+      </v-card>
+    </v-dialog>
+
     <v-row style="height:100%">
       <v-col :cols="3">
         <v-card class="mx-auto"
@@ -73,9 +107,9 @@
                   <div style="background: rgb(243,66,95); height:25px; border-bottom-left-radius: 0; border-bottom-right-radius: 0;"></div>
                 </v-card>
               </v-col>
-              <v-col :cols="8">
-                <div class="title-clu">会议名称
-                  <div class="title-addr">地点</div>
+              <v-col :cols="6">
+                <div class="title-clu">{{myapplys[item].content }}
+                  <div class="title-addr">906会议室</div>
                 </div>
               </v-col>
               <v-col :cols="2">
@@ -88,6 +122,13 @@
                         :action="currentApplyIDUpload">
                   <Button icon="ios-cloud-upload-outline">上传文件</Button>
                 </Upload>
+              </v-col>
+
+              <v-col :cols="2">
+                <Button style="margin-top:10px"
+                        icon="ios-cloud-upload-outline"
+                        @click="addDialog = true">添加人员</Button>
+
               </v-col>
             </v-row>
 
@@ -145,21 +186,22 @@
                             subheader>
                       <v-subheader inset>参会人员</v-subheader>
 
-                      <v-list-item v-for="item in items2"
-                                   :key="item.title">
+                      <v-list-item v-for="item in myapppyjoinchunk[joinPage - 1]"
+                                   :key="item.id">
                         <v-list-item-avatar>
                           <v-icon :class="itemfileiconclass"
-                                  v-text="itemfileicon"></v-icon>
+                                  v-text="itemfileicon1"></v-icon>
                         </v-list-item-avatar>
 
                         <v-list-item-content>
-                          <v-list-item-title v-text="item.title"></v-list-item-title>
-                          <v-list-item-subtitle v-text="item.subtitle"></v-list-item-subtitle>
+                          <v-list-item-title v-text="item.name"></v-list-item-title>
+                          <!-- <v-list-item-subtitle v-text="item.subtitle"></v-list-item-subtitle> -->
                         </v-list-item-content>
 
                         <v-list-item-action>
-                          <v-btn icon>
-                            <v-icon color="grey lighten-1">mdi-download</v-icon>
+                          <v-btn @click="onDelPerson(item.id)"
+                                 icon>
+                            <v-icon color="grey lighten-1">mdi-delete</v-icon>
                           </v-btn>
                         </v-list-item-action>
                       </v-list-item>
@@ -168,8 +210,8 @@
                     <v-footer absolute>
                       <v-col class="text-center"
                              cols="12">
-                        <v-pagination v-model="page"
-                                      :length="filePageSum"></v-pagination>
+                        <v-pagination v-model="joinPage"
+                                      :length="joinPageSum"></v-pagination>
                       </v-col>
 
                     </v-footer>
@@ -188,17 +230,19 @@
 </template>
 
 <script>
+import { getToken } from "@/libs/util";
 
 export default {
   data () {
     return {
+      addDialog: false,
       currentApplyIDUpload: "",
       dialog: false,
       appSnackbar: false,
       appSnackbarText: "",
       currentApplyID: "",
       headers: {
-        "Authorization": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE1OTM0OTcwNjMsImp0aSI6ImFkbWluIiwiaXNzIjoicjNpbmIiLCJuYmYiOjE1OTM0MTA2NjN9.M7xLEVukDwrYoHjxIgV0RHiaVX9riZYeYde2mfbP0wI"
+        Authorization: ""
       },
       lefticon: "mdi-clock",
       page: 1,
@@ -220,7 +264,11 @@ export default {
         }
       },
       item: 0,
-      myapplys: [],
+      myapplys: [
+        {
+          content: ''
+        }
+      ],
       myapplyfiles: [],
       myapppyfileschunk: [],
       items: [
@@ -234,7 +282,25 @@ export default {
         { icon: 'call_to_action', iconClass: 'amber white--text', title: 'Kitchen remodel3', subtitle: 'Jan 10, 2014' },
       ],
       itemfileiconclass: "amber white--text",
-      itemfileicon: "assignment"
+      itemfileicon1: "person",
+      itemfileicon: "assignment",
+
+
+
+
+
+      // ========================================================
+      myapplyjoins: [],
+      myapppyjoinchunk: [],
+      joinPageSum: 1,
+      joinPage: 1,
+      joinName: '',
+      joinNameRules: [
+        (v) => !!v || "你还没有填写名字呀",
+        (v) => (v && v.length < 12) || "太长了, 谢谢",
+      ],
+      formValid: true,
+
     }
   },
   methods: {
@@ -284,12 +350,18 @@ export default {
         this.currentApplyIDUpload = "filebed/meeting/file/" + this.currentApplyID;
         this.getApplyFile(this.currentApplyID);
 
+        this.myapppyjoinchunk.length = 0;
+        this.joinPage = 1;
+        this.joinPageSum = 1;
+        this.getApplyJoin(this.currentApplyID);
+
       }
     },
     firstFetch (val) {
       this.currentApplyID = this.myapplys[val].id
       this.currentApplyIDUpload = "filebed/meeting/file/" + this.currentApplyID;
       this.getApplyFile(this.currentApplyID);
+      this.getApplyJoin(this.currentApplyID);
     },
     uploadSucceed (response, file, fileList) {
       console.log(response);
@@ -313,7 +385,7 @@ export default {
       this.dialog = true;
     },
 
-
+    // ==================================start========================================
 
 
 
@@ -446,6 +518,7 @@ export default {
       return substr + str1;
     },
 
+    // =================================end=========================================
 
     onDownload (id) {
       console.log("down...: ", id);
@@ -485,11 +558,92 @@ export default {
           console.log(err);
 
         })
-    }
+    },
+
+    // =================================start join in============================================
+
+
+    onDelPerson (id) {
+      this.http
+        .delete("api/apply/join/" + id)
+        .then(res => {
+          console.log(res);
+          this.getApplyJoin(this.currentApplyID);
+          this.appSnackbarText = "删除成功";
+          this.appSnackbar = true;
+        })
+    },
+
+    onAddPerson () {
+
+      if (this.$refs["addForm"].validate()) {
+        console.log("add...");
+        this.http
+          .post("api/apply/join", { aid: this.currentApplyID, name: this.joinName })
+          .then(res => {
+            console.log(res);
+            this.addDialog = false;
+            this.$refs["addForm"].reset();
+            this.getApplyJoin(this.currentApplyID);
+            this.appSnackbarText = "添加成功";
+            this.appSnackbar = true;
+          })
+      }
+
+
+    },
+
+    /**
+     * @param id apply_id
+     */
+    getApplyJoin (id) {
+      this.http
+        .get("api/apply/join/" + id)
+        .then(res => {
+          console.log(res.data.data);
+          this.myapplyjoins = res.data.data;
+          this.myapppyjoinchunk = this._.chunk(this.myapplyjoins, 4);
+          // 分页计算
+          if (this.myapplyjoins.length === 0) {
+            this.joinPageSum = 1;
+          } else {
+            this.joinPageSum = parseInt((this.myapplyjoins.length + 3) / 4);
+          }
+          console.log("join tag", this.myapppyjoinchunk);
+          // this.myapppyfileschunk = this._.chunk(this.myapplyfiles, 4);
+
+
+        })
+        .catch(err => {
+          console.log(err);
+        })
+    },
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    // ================================= end  join in============================================
   },
   mounted () {
+    this.headers.Authorization = "bearer " + getToken();
     this.getMyApplyList();
-
   }
 }
 </script>
