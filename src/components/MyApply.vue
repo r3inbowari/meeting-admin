@@ -50,7 +50,8 @@
               </v-col>
               <v-col :cols="2">
                 <Upload style="margin-top:10px"
-                        action="/meeting/file/f860823d-912b-488b-a099-cc25d5408426">
+                        :headers="headers"
+                        action="filebed/meeting/file/0e63a411-dc05-4ae6-ac4d-db0f7499fb46">
                   <Button icon="ios-cloud-upload-outline">上传文件</Button>
                 </Upload>
               </v-col>
@@ -73,7 +74,7 @@
                       <v-subheader inset>文件列表
                       </v-subheader>
 
-                      <v-list-item v-for="item in myapplyfiles"
+                      <v-list-item v-for="item in myapppyfileschunk[filePage - 1]"
                                    :key="item.id">
                         <v-list-item-avatar>
                           <v-icon :class="itemfileiconclass"
@@ -156,13 +157,16 @@
 export default {
   data () {
     return {
+      headers: {
+        "Authorization": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE1OTM0OTcwNjMsImp0aSI6ImFkbWluIiwiaXNzIjoicjNpbmIiLCJuYmYiOjE1OTM0MTA2NjN9.M7xLEVukDwrYoHjxIgV0RHiaVX9riZYeYde2mfbP0wI"
+      },
       lefticon: "mdi-clock",
       page: 1,
 
       // file current page
       filePage: 1,
       // file sumup pages
-      filePageSum: 0,
+      filePageSum: 1,
       length: 3,
       ops: {
         rail: {
@@ -178,6 +182,7 @@ export default {
       item: 0,
       myapplys: [],
       myapplyfiles: [],
+      myapppyfileschunk: [],
       items: [
         { text: 'Real-Time', icon: 'mdi-clock' },
       ],
@@ -220,8 +225,10 @@ export default {
           if (this.myapplyfiles.length === 0) {
             this.filePageSum = 1;
           } else {
-            this.filePageSum = parseInt(this.myapplyfiles.length + 3) / 4;
+            this.filePageSum = parseInt((this.myapplyfiles.length + 3) / 4);
           }
+          this.myapppyfileschunk = this._.chunk(this.myapplyfiles, 4);
+          console.log(this.myapppyfileschunk);
 
         })
         .catch(err => {
@@ -230,8 +237,12 @@ export default {
     },
     onSwitchApply (val) {
       if (val != this.item) {
+        this.myapppyfileschunk.length = 0;
+        this.filePage = 1;
+        this.filePageSum = 1;
         let applyid = this.myapplys[val].id
         this.getApplyFile(applyid);
+
       }
     },
     firstFetch (val) {

@@ -13,6 +13,7 @@
     "js-cookie": "^2.2.1",
     "less": "^3.11.1",
     "less-loader": "^6.1.0",
+    "lodash": "^4.17.15",
     "moment": "^2.27.0",
     "view-design": "^4.2.0",
     "vue": "^2.6.11",

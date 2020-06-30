@@ -23,6 +23,10 @@ import ViewUI from 'view-design';
 import 'view-design/dist/styles/iview.css';
 Vue.use(ViewUI);
 
+// lodash import
+import _ from "lodash";
+Vue.prototype._ = _;
+
 Vue.use(vuescroll, {
 
 })
