@@ -109,7 +109,7 @@
               </v-col>
               <v-col :cols="8">
                 <div class="title-clu">{{myapplys[item].content }}
-                  <div class="title-addr">906会议室</div>
+                  <div class="title-addr">909 会议室</div>
                 </div>
               </v-col>
               <v-col :cols="2">

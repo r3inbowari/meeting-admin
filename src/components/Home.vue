@@ -49,7 +49,7 @@
       <template v-slot:append>
         <div style="text-align:center;"
              v-show="versionShow">
-          <v-list-item-title>debugger v2.1.1</v-list-item-title>
+          <v-list-item-title>debugger v2.3.0</v-list-item-title>
         </div>
       </template>
       <!-- </v-card> -->
@@ -105,8 +105,8 @@
               <div style="color: white">
                 <v-icon style="top:-1px"
                         small>update</v-icon>
-                v1.1.2-beta1(8a4b9b8..3ff633c) ahead branch origin/master built
-                at 2020/06/14 20:10:44 by Travis CI | nginx-proxy [1] /api [2] /home
+                v1.2.1-beta1(5317924..4d7b5ad) ahead branch origin/master built
+                at 2020/06/30 09:13:27 by Travis CI | nginx-proxy [1] /api [2] /home
                 | loginid: {{ $root.accountInfo.uid }} | role:
                 {{ $root.accountInfo.role }} {{ debug_loading }}
                 {{ debug_loading1 }}

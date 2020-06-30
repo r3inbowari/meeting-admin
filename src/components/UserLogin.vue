@@ -13,7 +13,7 @@
                height="600px"></v-img>
         <div class="nav-login-form">
           <div style="text-align:center;">
-            <p class="display-1 nav-login-title">904 会议系统</p>
+            <p class="display-1 nav-login-title">909 会议系统</p>
           </div>
           <div style="margin-top:20px">
             <v-form ref="loginForm"
@@ -174,7 +174,7 @@ export default {
       snackbarText: "message",
 
       // 版本信息
-      visualVersion: "v1.1.2 2020.06.14 beta1",
+      visualVersion: "v1.2.1 2020.06.30 beta1",
       serviceVersion: "获取中",
       pullVersionLoading: true,
 
